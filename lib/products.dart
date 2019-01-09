@@ -8,7 +8,7 @@ class Products extends StatelessWidget {
     return Card(
       child: Column(
         children: <Widget>[
-          Image.asset('assets/images/billy.jpg'),
+          Image.asset('assets/images/food.jpg'),
           Text(products[index]),
           ButtonBar(
             alignment: MainAxisAlignment.center,

@@ -14,13 +14,22 @@ class Products extends StatelessWidget {
     );
   }
 
+  Widget _buildProductLists() {
+    Widget productCard = Center(
+      child: Text('No products found, please add some'),
+    );
+    if (products.length > 0) {
+      productCard = ListView.builder(
+          itemBuilder: _buildProductItem, itemCount: products.length);
+    }
+    return productCard;
+  }
+
   Products(this.products);
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      itemBuilder: _buildProductItem,
-      itemCount: products.length,
-    );
+    print('[Products Widget] build()');
+    return _buildProductLists();
 
     ///La lista sotto, pur avendo la capacità di aggiungere lo scroll
     ///e quindi di essere completamente visibile nel dispositivo

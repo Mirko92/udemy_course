@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:udemy_course/pages/product.dart';
 
 class Products extends StatelessWidget {
   final List<String> products;
@@ -8,7 +9,19 @@ class Products extends StatelessWidget {
       child: Column(
         children: <Widget>[
           Image.asset('assets/images/billy.jpg'),
-          Text(products[index])
+          Text(products[index]),
+          ButtonBar(
+            alignment: MainAxisAlignment.center,
+            children: <Widget>[
+              FlatButton(
+                child: Text('Details'),
+                onPressed: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => ProductPage()));
+                },
+              )
+            ],
+          )
         ],
       ),
     );
@@ -22,6 +35,8 @@ class Products extends StatelessWidget {
       productCard = ListView.builder(
           itemBuilder: _buildProductItem, itemCount: products.length);
     }
+
+    /* E' importante non ritornare mai un Widget undefined, meglio un Container() vuoto */
     return productCard;
   }
 

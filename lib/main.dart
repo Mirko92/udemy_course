@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:udemy_course/pages/auth.dart';
+import 'package:udemy_course/pages/product_admin.dart';
+import 'package:udemy_course/pages/products.dart';
 
 void main() => runApp(MyApp());
 
@@ -10,12 +11,13 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.deepOrange,
-
       ),
-      home: AuthPage()
-      //MyHomePage(title: 'Udemy Courses'),
+      // home: AuthPage(),
+
+      routes: {
+        '/': (context) => ProductsPage(),
+        '/admin': (context) => ProductAdminPage()
+      },
     );
   }
 }
-
-

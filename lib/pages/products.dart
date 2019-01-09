@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:udemy_course/pages/product_admin.dart';
 import 'package:udemy_course/product_manager.dart';
 
 class ProductsPage extends StatelessWidget {
@@ -17,7 +16,7 @@ class ProductsPage extends StatelessWidget {
               title: Text('Manage Products'),
               onTap: () {
                 print('[ProductsPage Drawer] onTap()');
-                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> ProductAdminPage()));
+                Navigator.pushReplacementNamed(context, '/admin');
               },
             )
           ],

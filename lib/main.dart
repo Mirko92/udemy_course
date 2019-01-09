@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:udemy_course/pages/home.dart';
+import 'package:udemy_course/pages/auth.dart';
 
 void main() => runApp(MyApp());
 
@@ -12,7 +12,8 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.deepOrange,
 
       ),
-      home: MyHomePage(title: 'Udemy Courses'),
+      home: AuthPage()
+      //MyHomePage(title: 'Udemy Courses'),
     );
   }
 }

@@ -17,7 +17,7 @@ class Products extends StatelessWidget {
                 child: Text('Details'),
                 onPressed: () {
                   Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => ProductPage()));
+                      MaterialPageRoute(builder: (BuildContext context) => ProductPage()));
                 },
               )
             ],

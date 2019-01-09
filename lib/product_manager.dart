@@ -24,7 +24,9 @@ class _ProductManagerState extends State<ProductManager> {
             child: Text('Add Product'),
           ),
         ),
-        Products(_products)
+        Expanded(
+          child: Products(_products),
+        )
       ],
     );
   }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:udemy_course/pages/home.dart';
+import 'package:udemy_course/pages/products.dart';
 
 class AuthPage extends StatelessWidget {
   @override
@@ -11,7 +11,7 @@ class AuthPage extends StatelessWidget {
             child: Text('Login'),
             onPressed: () {
               Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (context) => MyHomePage(title: 'Titolo',)));
+                  MaterialPageRoute(builder: (context) => ProductsPage()));
             }),
       ),
     );

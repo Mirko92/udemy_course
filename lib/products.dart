@@ -13,8 +13,23 @@ class Products extends StatelessWidget {
       child: Column(
         children: <Widget>[
           Image.asset(products[index].imageUrl),
-          Text(products[index].title),
-          // Text(products[index].description),
+
+          //Simile allo spacer di PrimeFaces
+          // SizedBox(height: 10.0,),
+
+
+          Container(
+            ///Il container è il DIV 
+            ///
+            ///Se si vuole aggiungere solo il padding 
+            ///si può usare anche Padding() al posto di container
+            padding: EdgeInsets.only(top:10.0),
+            // padding: EdgeInsets.all(10.0),
+            // color: Colors.red,
+            child: Text(products[index].title),
+          ),
+          
+
           ButtonBar(
             alignment: MainAxisAlignment.center,
             children: <Widget>[

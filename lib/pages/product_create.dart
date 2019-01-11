@@ -66,7 +66,7 @@ class _ProductCreatePageState extends State<ProductCreatePage> {
                   price: _priceValue,
                   imageUrl: 'assets/images/food.jpg'));
 
-              Navigator.pushReplacementNamed(context, '/');
+              Navigator.pushReplacementNamed(context, '/products');
             },
           )
         ],

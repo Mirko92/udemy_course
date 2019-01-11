@@ -17,28 +17,58 @@ class Products extends StatelessWidget {
           //Simile allo spacer di PrimeFaces
           // SizedBox(height: 10.0,),
 
-
           Container(
-            ///Il container è il DIV 
+            ///Il container è il DIV
             ///
-            ///Se si vuole aggiungere solo il padding 
+            ///Se si vuole aggiungere solo il padding
             ///si può usare anche Padding() al posto di container
-            padding: EdgeInsets.only(top:10.0),
+            padding: EdgeInsets.only(top: 10.0),
             // padding: EdgeInsets.all(10.0),
             // color: Colors.red,
-            child: Text(products[index].title),
+            child: Row(
+              // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text(
+                  products[index].title,
+                  style: TextStyle(
+                      color: Theme.of(context).primaryColor,
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Oswald'),
+                ),
+                SizedBox(
+                  width: 8.0,
+                ),
+                Container(
+                  padding: EdgeInsets.symmetric(vertical: 2.5, horizontal: 6.0),
+                  child: Text(
+                    '\$${products[index].price}',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  decoration: BoxDecoration(
+                      color: Theme.of(context).accentColor,
+                      borderRadius: BorderRadius.circular(5.0)),
+                ),
+              ],
+            ),
           ),
-          
+          Container(
+            padding: EdgeInsets.symmetric(vertical: 2.5, horizontal: 6.0),
+            decoration: BoxDecoration(
+                border: Border.all(
+                    width: 1, style: BorderStyle.solid, color: Colors.grey),
+                borderRadius: BorderRadius.circular(4.0)),
+            child: Text('Qualcosa ci devo pur scrivere'),
+          ),
 
           ButtonBar(
             alignment: MainAxisAlignment.center,
             children: <Widget>[
               FlatButton(
                 child: Text('Details'),
-                onPressed: () => Navigator
-                        .pushNamed<bool>(
-                            context, '/product/' + index.toString())
-                ,
+                onPressed: () => Navigator.pushNamed<bool>(
+                    context, '/product/' + index.toString()),
               )
             ],
           )

@@ -10,10 +10,12 @@ class ProductCreatePage extends StatefulWidget {
   State<ProductCreatePage> createState() => _ProductCreatePageState();
 }
 
+///Best Practice: 
+///Le property di una classe privata "_NomeClasse" devono essere private "_NomeProperty"
 class _ProductCreatePageState extends State<ProductCreatePage> {
-  String titleValue = '';
-  String descriptionValue = '';
-  double priceValue;
+  String _titleValue        = '';
+  String _descriptionValue  = '';
+  double _priceValue;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +28,7 @@ class _ProductCreatePageState extends State<ProductCreatePage> {
             autofocus: true,
             onChanged: (String text) {
               setState(() {
-                titleValue = text;
+                _titleValue = text;
               });
             },
           ),
@@ -36,7 +38,7 @@ class _ProductCreatePageState extends State<ProductCreatePage> {
             maxLines: 4,
             onChanged: (String text) {
               setState(() {
-                descriptionValue = text;
+                _descriptionValue = text;
               });
             },
           ),
@@ -48,7 +50,7 @@ class _ProductCreatePageState extends State<ProductCreatePage> {
             keyboardType: TextInputType.numberWithOptions(),
             onChanged: (String value) {
               setState(() {
-                priceValue = double.parse(value);
+                _priceValue = double.parse(value);
               });
             },
           ),
@@ -59,9 +61,9 @@ class _ProductCreatePageState extends State<ProductCreatePage> {
             textColor: Colors.white,
             onPressed: () {
               widget.addProduct(new Product(
-                  title: titleValue,
-                  description: descriptionValue,
-                  price: priceValue,
+                  title: _titleValue,
+                  description: _descriptionValue,
+                  price: _priceValue,
                   imageUrl: 'assets/images/food.jpg'));
 
               Navigator.pushReplacementNamed(context, '/');

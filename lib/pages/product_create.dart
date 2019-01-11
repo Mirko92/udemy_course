@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:udemy_course/model/product.dart';
 
 class ProductCreatePage extends StatefulWidget {
+  final Function addProduct;
+
+  ProductCreatePage(this.addProduct);
+
   @override
   State<ProductCreatePage> createState() => _ProductCreatePageState();
 }
 
 class _ProductCreatePageState extends State<ProductCreatePage> {
-  String titleText = '';
+  String titleValue = '';
   String descriptionValue = '';
   double priceValue;
 
@@ -21,7 +26,7 @@ class _ProductCreatePageState extends State<ProductCreatePage> {
             autofocus: true,
             onChanged: (String text) {
               setState(() {
-                titleText = text;
+                titleValue = text;
               });
             },
           ),
@@ -47,10 +52,19 @@ class _ProductCreatePageState extends State<ProductCreatePage> {
               });
             },
           ),
+          SizedBox(height: 20.0,),
           RaisedButton(
             child: Text('Save'),
+            color: Theme.of(context).accentColor,
+            textColor: Colors.white,
             onPressed: () {
-              
+              widget.addProduct(new Product(
+                  title: titleValue,
+                  description: descriptionValue,
+                  price: priceValue,
+                  imageUrl: 'assets/images/food.jpg'));
+
+              Navigator.pushReplacementNamed(context, '/');
             },
           )
         ],

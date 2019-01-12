@@ -35,6 +35,35 @@ class ProductPage extends StatelessWidget {
         });
   }
 
+  Widget _buildAddressPriceRow() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Text('Qualcosa devo pur scrivere',
+            style: TextStyle(fontFamily: 'Oswald', color: Colors.grey)),
+        Container(
+          child: Text(
+            '|',
+          ),
+          margin: EdgeInsets.symmetric(horizontal: 5.0),
+        ),
+        Text('\$' + product.price.toString(),
+            style: TextStyle(fontFamily: 'Oswald', color: Colors.green))
+      ],
+    );
+  }
+
+  Widget _buildDescriptionContainer() {
+    return Container(
+        padding: EdgeInsets.all(10.0),
+        // margin: EdgeInsets.only(top:10.0),
+        child: Text(
+          product.description,
+          style: TextStyle(fontFamily: 'Oswald', color: Colors.grey),
+          textAlign: TextAlign.center,
+        ));
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -55,29 +84,8 @@ class ProductPage extends StatelessWidget {
               padding: EdgeInsets.all(10.0),
               child: TitleDefault(product.title),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text('Qualcosa devo pur scrivere',
-                    style: TextStyle(fontFamily: 'Oswald', color: Colors.grey)),
-                Container(
-                  child: Text(
-                    '|',
-                  ),
-                  margin: EdgeInsets.symmetric(horizontal: 5.0),
-                ),
-                Text('\$' + product.price.toString(),
-                    style: TextStyle(fontFamily: 'Oswald', color: Colors.green))
-              ],
-            ),
-            Container(
-                padding: EdgeInsets.all(10.0),
-                // margin: EdgeInsets.only(top:10.0),
-                child: Text(
-                  product.description,
-                  style: TextStyle(fontFamily: 'Oswald', color: Colors.grey),
-                  textAlign: TextAlign.center,
-                ))
+            _buildAddressPriceRow(),
+            _buildDescriptionContainer()
           ],
         ),
       ),

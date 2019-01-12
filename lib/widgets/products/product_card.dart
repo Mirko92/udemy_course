@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:udemy_course/model/product.dart';
+import 'package:udemy_course/widgets/products/price.dart';
+import 'package:udemy_course/widgets/ui_elements/title_default.dart';
 
-class Products extends StatelessWidget {
-  final List<Product> products;
+class ProductCard extends StatelessWidget{
+  final int index;
+  final Product product;
 
-  Products(this.products) {
-    print('[Products Widget] Constructor');
-  }
+  ProductCard(this.product, this.index);
 
-  Widget _buildProductItem(BuildContext context, int index) {
+  @override
+  Widget build(BuildContext context) {
     return Card(
       child: Column(
         children: <Widget>[
-          Image.asset(products[index].imageUrl),
+          Image.asset(product.imageUrl),
 
           //Simile allo spacer di PrimeFaces
           // SizedBox(height: 10.0,),
@@ -29,27 +31,11 @@ class Products extends StatelessWidget {
               // mainAxisAlignment: MainAxisAlignment.spaceBetween,
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Text(
-                  products[index].title,
-                  style: TextStyle(
-                      color: Theme.of(context).primaryColor,
-                      fontSize: 26,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Oswald'),
-                ),
+                TitleDefault(product.title),
                 SizedBox(
                   width: 8.0,
                 ),
-                Container(
-                  padding: EdgeInsets.symmetric(vertical: 2.5, horizontal: 6.0),
-                  child: Text(
-                    '\$${products[index].price}',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  decoration: BoxDecoration(
-                      color: Theme.of(context).accentColor,
-                      borderRadius: BorderRadius.circular(5.0)),
-                ),
+                PriceTag(product.price)
               ],
             ),
           ),
@@ -65,8 +51,15 @@ class Products extends StatelessWidget {
           ButtonBar(
             alignment: MainAxisAlignment.center,
             children: <Widget>[
-              FlatButton(
-                child: Text('Details'),
+              IconButton(
+                icon: Icon(Icons.info),
+                color: Theme.of(context).accentColor,
+                onPressed: () => Navigator.pushNamed<bool>(
+                    context, '/product/' + index.toString()),
+              ),
+              IconButton(
+                icon: Icon(Icons.favorite_border),
+                color: Colors.red,
                 onPressed: () => Navigator.pushNamed<bool>(
                     context, '/product/' + index.toString()),
               )
@@ -77,22 +70,4 @@ class Products extends StatelessWidget {
     );
   }
 
-  Widget _buildProductList() {
-    Widget productCards;
-    if (products.length > 0) {
-      productCards = ListView.builder(
-        itemBuilder: _buildProductItem,
-        itemCount: products.length,
-      );
-    } else {
-      productCards = Container();
-    }
-    return productCards;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    print('[Products Widget] build()');
-    return _buildProductList();
-  }
 }

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:udemy_course/model/product.dart';
+import 'package:udemy_course/widgets/ui_elements/title_default.dart';
 
 class ProductPage extends StatelessWidget {
   final Product product;
@@ -52,12 +53,31 @@ class ProductPage extends StatelessWidget {
             Image.asset(product.imageUrl),
             Container(
               padding: EdgeInsets.all(10.0),
-              child: Text(product.details),
+              child: TitleDefault(product.title),
             ),
-            RaisedButton(
-              onPressed: () => _showWarningDialog(context),
-              child: Text('Delete'),
-            )
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text('Qualcosa devo pur scrivere',
+                    style: TextStyle(fontFamily: 'Oswald', color: Colors.grey)),
+                Container(
+                  child: Text(
+                    '|',
+                  ),
+                  margin: EdgeInsets.symmetric(horizontal: 5.0),
+                ),
+                Text('\$' + product.price.toString(),
+                    style: TextStyle(fontFamily: 'Oswald', color: Colors.green))
+              ],
+            ),
+            Container(
+                padding: EdgeInsets.all(10.0),
+                // margin: EdgeInsets.only(top:10.0),
+                child: Text(
+                  product.description,
+                  style: TextStyle(fontFamily: 'Oswald', color: Colors.grey),
+                  textAlign: TextAlign.center,
+                ))
           ],
         ),
       ),

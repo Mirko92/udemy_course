@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:udemy_course/model/product.dart';
-import 'package:udemy_course/product_manager.dart';
+import 'package:udemy_course/widgets/products/products.dart';
 
 class ProductsPage extends StatelessWidget {
   final List<Product> products;
@@ -18,6 +18,7 @@ class ProductsPage extends StatelessWidget {
               title: Text('Choose'),
             ),
             ListTile(
+              leading: Icon(Icons.edit),
               title: Text('Manage Products'),
               onTap: () {
                 print('[ProductsPage Drawer] onTap()');
@@ -28,7 +29,13 @@ class ProductsPage extends StatelessWidget {
         )),
         appBar: AppBar(
           title: Text('Product list'),
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.favorite,),
+              onPressed: () {},
+            )
+          ],
         ),
-        body: ProductManager(products));
+        body: Products(products));
   }
 }

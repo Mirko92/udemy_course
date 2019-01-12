@@ -34,8 +34,7 @@ class _ProductCreatePageState extends State<ProductCreatePage> {
           ),
           TextField(
             decoration: InputDecoration(labelText: 'Product Description'),
-            autofocus: true,
-            maxLines: 4,
+            maxLines: 3,
             onChanged: (String text) {
               setState(() {
                 _descriptionValue = text;

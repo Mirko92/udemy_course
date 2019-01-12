@@ -11,12 +11,11 @@ void main() {
 
 class MyApp extends StatefulWidget {
   @override
-  State<MyApp> createState()=>_MyAppState();
+  State<MyApp> createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
   List<Product> _products = [];
-
 
   void _addProduct(Product product) {
     setState(() {

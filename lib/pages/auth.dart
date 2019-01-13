@@ -13,9 +13,13 @@ class _AuthPageState extends State<AuthPage> {
   DecorationImage _buildBackgroundImage(String path) {
     return DecorationImage(
         colorFilter:
-            ColorFilter.mode(Colors.black.withOpacity(0.5), BlendMode.darken),
+            ColorFilter.mode(Colors.black.withOpacity(0.5), BlendMode.dstATop),
         image: AssetImage('assets/images/background.jpg'),
         fit: BoxFit.cover);
+  }
+
+  TextStyle _getTextStyle(BuildContext context) {
+    return TextStyle(color: Theme.of(context).primaryColor);
   }
 
   Widget _buildEmailTextField() {
@@ -26,7 +30,7 @@ class _AuthPageState extends State<AuthPage> {
         icon: Icon(Icons.email),
       ),
       keyboardType: TextInputType.emailAddress,
-      style: TextStyle(color: Theme.of(context).primaryColor),
+      style: _getTextStyle(context),
       onChanged: (String value) {
         setState(() {
           _emailValue = value;
@@ -40,7 +44,7 @@ class _AuthPageState extends State<AuthPage> {
       decoration:
           InputDecoration(labelText: 'Password', icon: Icon(Icons.vpn_key)),
       obscureText: true,
-      style: TextStyle(color: Theme.of(context).primaryColor),
+      style: _getTextStyle(context),
       onChanged: (String value) {
         setState(() {
           _passwordValue = value;
@@ -51,7 +55,10 @@ class _AuthPageState extends State<AuthPage> {
 
   Widget _buildAccetptSwitch() {
     return SwitchListTile(
-      title: Text('Accept Terms'),
+      title: Text(
+        'Accept Terms',
+        style: TextStyle(color: Colors.white),
+      ),
       value: _acceptTermsValue,
       onChanged: (bool value) {
         setState(() {
@@ -69,6 +76,10 @@ class _AuthPageState extends State<AuthPage> {
 
   @override
   Widget build(BuildContext context) {
+    
+    final double deviceWidth =  MediaQuery.of(context).size.width;
+    final double targetWidth = deviceWidth > 550.0 ? 500 : deviceWidth*0.95;   
+
     return Scaffold(
         appBar: AppBar(title: Text('Login')),
         body: Container(
@@ -78,6 +89,8 @@ class _AuthPageState extends State<AuthPage> {
           padding: EdgeInsets.all(10.0),
           child: Center(
               child: SingleChildScrollView(
+                  child: Container(
+            width: targetWidth,
             child: Column(children: <Widget>[
               _buildEmailTextField(),
               _buildPasswordTextField(),
@@ -86,12 +99,11 @@ class _AuthPageState extends State<AuthPage> {
                 height: 10.0,
               ),
               RaisedButton(
-                  color: Theme.of(context).primaryColor,
                   textColor: Colors.white,
                   child: Text('Login'),
                   onPressed: _submitForm),
             ]),
-          )),
+          ))),
         ));
   }
 }

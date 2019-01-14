@@ -6,9 +6,14 @@ class AuthPage extends StatefulWidget {
 }
 
 class _AuthPageState extends State<AuthPage> {
-  String _emailValue;
-  String _passwordValue;
+  final Map<String, dynamic> _formData = {
+    'email': null,
+    'password': null,
+    'terms': false
+  };
   bool _acceptTermsValue = false;
+
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   DecorationImage _buildBackgroundImage(String path) {
     return DecorationImage(
@@ -23,7 +28,7 @@ class _AuthPageState extends State<AuthPage> {
   }
 
   Widget _buildEmailTextField() {
-    return TextField(
+    return TextFormField(
       autofocus: true,
       decoration: InputDecoration(
         labelText: 'E-Mail',
@@ -31,24 +36,32 @@ class _AuthPageState extends State<AuthPage> {
       ),
       keyboardType: TextInputType.emailAddress,
       style: _getTextStyle(context),
-      onChanged: (String value) {
-        setState(() {
-          _emailValue = value;
-        });
+      validator: (String newValue) {
+        if (newValue.isEmpty ||
+            !RegExp(r"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")
+                .hasMatch(newValue)) {
+          return "Please enter a valid email!";
+        }
+      },
+      onSaved: (String value) {
+        _formData['email'] = value;
       },
     );
   }
 
   Widget _buildPasswordTextField() {
-    return TextField(
+    return TextFormField(
       decoration:
           InputDecoration(labelText: 'Password', icon: Icon(Icons.vpn_key)),
       obscureText: true,
       style: _getTextStyle(context),
-      onChanged: (String value) {
-        setState(() {
-          _passwordValue = value;
-        });
+      validator: (String newValue) {
+        if (newValue.isEmpty || newValue.length < 6) {
+          return "Please enter a valid password, 6+ characters long";
+        }
+      },
+      onSaved: (String value) {
+        _formData['password'] = value.trim();
       },
     );
   }
@@ -59,51 +72,63 @@ class _AuthPageState extends State<AuthPage> {
         'Accept Terms',
         style: TextStyle(color: Colors.white),
       ),
-      value: _acceptTermsValue,
+      value: _formData['terms'],
       onChanged: (bool value) {
-        setState(() {
-          _acceptTermsValue = value;
-        });
+        // setState(() {
+          _formData['terms'] = value;
+        // });
       },
     );
   }
 
   void _submitForm() {
-    print('Email    : $_emailValue');
-    print('Password : $_passwordValue');
+    if (!_formKey.currentState.validate()) {
+      return;
+    }
+    _formKey.currentState.save();
+
+    print('Email    : ${_formData['email']}');
+    print('Password : ${_formData['password']}');
     Navigator.pushReplacementNamed(context, '/products');
   }
 
   @override
   Widget build(BuildContext context) {
-    
-    final double deviceWidth =  MediaQuery.of(context).size.width;
-    final double targetWidth = deviceWidth > 550.0 ? 500 : deviceWidth*0.95;   
+    final double deviceWidth = MediaQuery.of(context).size.width;
+    final double targetWidth = deviceWidth > 550.0 ? 500 : deviceWidth * 0.95;
 
     return Scaffold(
-        appBar: AppBar(title: Text('Login')),
-        body: Container(
-          decoration: BoxDecoration(
-            image: _buildBackgroundImage('assets/images/background.jpg'),
-          ),
-          padding: EdgeInsets.all(10.0),
-          child: Center(
-              child: SingleChildScrollView(
-                  child: Container(
-            width: targetWidth,
-            child: Column(children: <Widget>[
-              _buildEmailTextField(),
-              _buildPasswordTextField(),
-              _buildAccetptSwitch(),
-              SizedBox(
-                height: 10.0,
+      appBar: AppBar(title: Text('Login')),
+      body: Container(
+        decoration: BoxDecoration(
+          image: _buildBackgroundImage('assets/images/background.jpg'),
+        ),
+        padding: EdgeInsets.all(10.0),
+        child: Center(
+          child: SingleChildScrollView(
+            child: Container(
+              width: targetWidth,
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: <Widget>[
+                    _buildEmailTextField(),
+                    _buildPasswordTextField(),
+                    _buildAccetptSwitch(),
+                    SizedBox(
+                      height: 10.0,
+                    ),
+                    RaisedButton(
+                        textColor: Colors.white,
+                        child: Text('Login'),
+                        onPressed: _submitForm),
+                  ],
+                ),
               ),
-              RaisedButton(
-                  textColor: Colors.white,
-                  child: Text('Login'),
-                  onPressed: _submitForm),
-            ]),
-          ))),
-        ));
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:udemy_course/model/product.dart';
 
-class ProductCreatePage extends StatefulWidget {
+class ProductEditPage extends StatefulWidget {
   final Function addProduct;
+  final Function updateProduct;
+  final Product product;
 
-  ProductCreatePage(this.addProduct);
+  ProductEditPage({this.addProduct, this.updateProduct,this.product});
 
   @override
-  State<ProductCreatePage> createState() => _ProductCreatePageState();
+  State<ProductEditPage> createState() => _ProductEditPageState();
 }
 
 ///Best Practice:
 ///Le property di una classe privata "_NomeClasse" devono essere private "_NomeProperty"
-class _ProductCreatePageState extends State<ProductCreatePage> {
-  String _titleValue = '';
-  String _descriptionValue = '';
-  double _priceValue;
+class _ProductEditPageState extends State<ProductEditPage> {
+  final Product _formData = Product();
   final GlobalKey<FormState> _formKey = GlobalKey();
 
   Widget _buildTitleTextField() {
@@ -28,9 +28,7 @@ class _ProductCreatePageState extends State<ProductCreatePage> {
         }
       },
       onSaved: (String newValue) {
-        setState(() {
-          _titleValue = newValue;
-        });
+          _formData.title = newValue;
       },
     );
   }
@@ -45,9 +43,7 @@ class _ProductCreatePageState extends State<ProductCreatePage> {
         }
       },
       onSaved: (String newValue) {
-        setState(() {
-          _descriptionValue = newValue;
-        });
+          _formData.description = newValue;
       },
     );
   }
@@ -67,9 +63,7 @@ class _ProductCreatePageState extends State<ProductCreatePage> {
         }
       },
       onSaved: (String newValue) {
-        setState(() {
-          _priceValue = double.parse(newValue);
-        });
+          _formData.price = double.parse(newValue);
       },
     );
   }
@@ -79,13 +73,10 @@ class _ProductCreatePageState extends State<ProductCreatePage> {
       return;
     }
 
-    ///Ogni volta che viene chiamato, chiama il meto salva di tutti i campi input interni alla form
+    ///Ogni volta che viene chiamato, chiama il metodo salva di tutti i campi input interni alla form
     _formKey.currentState.save();
-    widget.addProduct(new Product(
-        title: _titleValue,
-        description: _descriptionValue,
-        price: _priceValue,
-        imageUrl: 'assets/images/food.jpg'));
+    _formData.imageUrl = 'assets/images/food.jpg';
+    widget.addProduct(_formData);
     Navigator.pushReplacementNamed(context, '/products');
   }
 

@@ -5,8 +5,9 @@ class ProductEditPage extends StatefulWidget {
   final Function addProduct;
   final Function updateProduct;
   final Product product;
+  final int productIndex;
 
-  ProductEditPage({this.addProduct, this.updateProduct,this.product});
+  ProductEditPage({this.addProduct, this.updateProduct, this.product, this.productIndex});
 
   @override
   State<ProductEditPage> createState() => _ProductEditPageState();
@@ -22,13 +23,14 @@ class _ProductEditPageState extends State<ProductEditPage> {
     return TextFormField(
       decoration: InputDecoration(labelText: 'Product Title'),
       autofocus: true,
+      initialValue: widget.product==null? '' : widget.product.title,
       validator: (String value) {
         if (value.trim().isEmpty || value.trim().length <= 5) {
           return "Title is required, and should be 5+ characters long.";
         }
       },
       onSaved: (String newValue) {
-          _formData.title = newValue;
+        _formData.title = newValue;
       },
     );
   }
@@ -37,13 +39,14 @@ class _ProductEditPageState extends State<ProductEditPage> {
     return TextFormField(
       decoration: InputDecoration(labelText: 'Product Description'),
       maxLines: 3,
+      initialValue: widget.product==null? '' : widget.product.description,
       validator: (String value) {
         if (value.trim().isEmpty || value.trim().length <= 10) {
           return "Description is required, and should be 10+ characters long.";
         }
       },
       onSaved: (String newValue) {
-          _formData.description = newValue;
+        _formData.description = newValue;
       },
     );
   }
@@ -53,6 +56,8 @@ class _ProductEditPageState extends State<ProductEditPage> {
       decoration: InputDecoration(
         labelText: 'Product Price',
       ),
+      initialValue:
+          widget.product == null ? '' : widget.product.price.toString(),
       autofocus: true,
       keyboardType: TextInputType.numberWithOptions(),
       validator: (String value) {
@@ -63,7 +68,7 @@ class _ProductEditPageState extends State<ProductEditPage> {
         }
       },
       onSaved: (String newValue) {
-          _formData.price = double.parse(newValue);
+        _formData.price = double.parse(newValue);
       },
     );
   }
@@ -76,7 +81,13 @@ class _ProductEditPageState extends State<ProductEditPage> {
     ///Ogni volta che viene chiamato, chiama il metodo salva di tutti i campi input interni alla form
     _formKey.currentState.save();
     _formData.imageUrl = 'assets/images/food.jpg';
-    widget.addProduct(_formData);
+
+    if(widget.product == null){
+      widget.addProduct(_formData);
+    }else{
+      widget.updateProduct(widget.productIndex, _formData);
+    }
+
     Navigator.pushReplacementNamed(context, '/products');
   }
 
@@ -85,8 +96,7 @@ class _ProductEditPageState extends State<ProductEditPage> {
     final double deviceWidth = MediaQuery.of(context).size.width;
     final double targetWidth = deviceWidth > 550.0 ? 500 : deviceWidth * 0.95;
     final double targetPadding = deviceWidth - targetWidth;
-
-    return Container(
+    final Widget pageContent = Container(
       width: targetWidth,
       margin: EdgeInsets.all(10.0),
       child: Form(
@@ -110,5 +120,14 @@ class _ProductEditPageState extends State<ProductEditPage> {
         ),
       ),
     );
+
+    return widget.product == null
+        ? pageContent
+        : Scaffold(
+            appBar: AppBar(
+              title: Text('Edit Product'),
+            ),
+            body: pageContent,
+          );
   }
 }

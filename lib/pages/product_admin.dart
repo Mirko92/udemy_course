@@ -6,9 +6,10 @@ import 'package:udemy_course/pages/product_list.dart';
 class ProductsAdminPage extends StatelessWidget {
   final Function addProduct;
   final Function deleteProduct;
+  final Function updateProduct;
   final List<Product> products;
 
-  ProductsAdminPage(this.addProduct, this.deleteProduct, this.products);
+  ProductsAdminPage(this.addProduct, this.updateProduct, this.deleteProduct, this.products);
 
   Widget _buildSideDrawer(BuildContext context) {
     return Drawer(
@@ -50,7 +51,7 @@ class ProductsAdminPage extends StatelessWidget {
         body: TabBarView(
           children: <Widget>[
             ProductEditPage(addProduct:addProduct),
-            ProductListPage(products),
+            ProductListPage(products, updateProduct),
           ],
         ),
       ),

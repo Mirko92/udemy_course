@@ -14,12 +14,20 @@ class ProductListPage extends StatelessWidget {
     return ListView.builder(
       itemBuilder: (BuildContext context, int index) {
         return ListTile(
-          leading: Image.asset(products[index].imageUrl, fit: BoxFit.contain, scale: 20.0,),
+          leading: CircleAvatar(
+            backgroundImage: AssetImage(
+              products[index].imageUrl,
+            ),
+          ),
+
           title: Text(products[index].title),
           // contentPadding: EdgeInsets.all(100),
-          
+
           trailing: IconButton(
-            icon: Icon(Icons.edit, color: Colors.red,),
+            icon: Icon(
+              Icons.edit,
+              color: Colors.red,
+            ),
             onPressed: () {
               Navigator.of(context).push(
                 MaterialPageRoute(

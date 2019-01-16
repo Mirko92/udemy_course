@@ -1,13 +1,20 @@
+import 'package:flutter/material.dart';
+
 class Product {
-  String title;
+  final String title;
 
-  String description;
+  final String description;
 
-  String imageUrl;
+  final String imageUrl;
 
-  String details;
+  final String details;
 
-  double price;
+  final double price;
 
-  Product({this.title, this.description, this.imageUrl, this.details, this.price});
+  Product(
+      {@required this.title,
+      @required this.description,
+      @required this.imageUrl,
+      this.details,
+      @required this.price});
 }

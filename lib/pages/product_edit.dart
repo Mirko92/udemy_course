@@ -79,7 +79,7 @@ class _ProductEditPageState extends State<ProductEditPage> {
     if (selectedProductIndex == null) {
       addProduct(_formData);
     } else {
-      updateProduct(selectedProductIndex, _formData);
+      updateProduct(_formData);
     }
 
     Navigator.pushReplacementNamed(context, '/products');

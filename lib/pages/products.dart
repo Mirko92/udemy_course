@@ -1,12 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:udemy_course/model/product.dart';
 import 'package:udemy_course/widgets/products/products.dart';
 
 class ProductsPage extends StatelessWidget {
-  final List<Product> products;
-
-  ProductsPage(this.products);
-
   Widget _buildSideDrawer(BuildContext context) {
     return Drawer(
         child: Column(
@@ -30,18 +25,19 @@ class ProductsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        drawer: _buildSideDrawer(context),
-        appBar: AppBar(
-          title: Text('Product list'),
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(
-                Icons.favorite,
-              ),
-              onPressed: () {},
-            )
-          ],
-        ),
-        body: Products(products));
+      drawer: _buildSideDrawer(context),
+      appBar: AppBar(
+        title: Text('Product list'),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(
+              Icons.favorite,
+            ),
+            onPressed: () {},
+          )
+        ],
+      ),
+      body: Products(),
+    );
   }
 }

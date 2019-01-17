@@ -3,20 +3,34 @@ import 'package:udemy_course/model/product.dart';
 
 class ProductsModel extends Model {
   List<Product> _products = [];
+  int _selectedProductIndex; 
 
   List<Product> get products{
     return List.from(_products);
   }
+  int get selectedProductIndex{
+    return _selectedProductIndex;
+  }
+  Product get selectedProduct{
+    return _selectedProductIndex!=null ? _products[_selectedProductIndex] : null;
+  }
 
   void addProduct(Product product) {
     _products.add(product);
+    _selectedProductIndex = null;
   }
 
-  void updateProduct(int index, Product updateProduct) {
-    _products[index] = updateProduct;
+  void updateProduct(Product updateProduct) {
+    _products[_selectedProductIndex] = updateProduct;
+    _selectedProductIndex = null;
   }
 
-  void deleteProduct(int index) {
-    _products.removeAt(index);
+  void deleteProduct() {
+    _products.removeAt(_selectedProductIndex);
+    _selectedProductIndex = null;
+  }
+
+  void selectProduct(int index){
+    _selectedProductIndex = index;
   }
 }

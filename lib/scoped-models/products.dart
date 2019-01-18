@@ -18,19 +18,35 @@ class ProductsModel extends Model {
   void addProduct(Product product) {
     _products.add(product);
     _selectedProductIndex = null;
+    notifyListeners();
   }
 
   void updateProduct(Product updateProduct) {
     _products[_selectedProductIndex] = updateProduct;
     _selectedProductIndex = null;
+    notifyListeners();
   }
 
   void deleteProduct() {
     _products.removeAt(_selectedProductIndex);
     _selectedProductIndex = null;
+    notifyListeners();
   }
 
   void selectProduct(int index){
     _selectedProductIndex = index;
+    notifyListeners();
+  }
+
+  void toggleProductFavoriteStatus(){
+    final Product updatedProduct = Product( title: selectedProduct.title, 
+                                            description: selectedProduct.description,
+                                            imageUrl: selectedProduct.imageUrl,
+                                            price: selectedProduct.price,
+                                            isFavorite:  !selectedProduct.isFavorite);
+    _products[selectedProductIndex] = updatedProduct; 
+    _selectedProductIndex = null;
+    
+    notifyListeners();
   }
 }

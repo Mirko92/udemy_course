@@ -4,7 +4,7 @@ import 'package:udemy_course/pages/auth.dart';
 import 'package:udemy_course/pages/product.dart';
 import 'package:udemy_course/pages/product_admin.dart';
 import 'package:udemy_course/pages/products.dart';
-import 'package:udemy_course/scoped-models/products.dart';
+import 'package:udemy_course/scoped-models/main.dart';
 
 void main() {
   runApp(MyApp());
@@ -18,8 +18,8 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
-    return ScopedModel<ProductsModel>(
-      model: ProductsModel(),
+    return ScopedModel<MainModel>(
+      model: MainModel(),
       child: MaterialApp(
         // debugShowMaterialGrid: true,
         theme: ThemeData(

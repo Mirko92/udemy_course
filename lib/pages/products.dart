@@ -3,7 +3,22 @@ import 'package:scoped_model/scoped_model.dart';
 import 'package:udemy_course/scoped-models/main.dart';
 import 'package:udemy_course/widgets/products/products.dart';
 
-class ProductsPage extends StatelessWidget {
+class ProductsPage extends StatefulWidget {
+  final MainModel model;
+
+  ProductsPage(this.model);
+
+  @override
+  _ProductsPageState createState() => _ProductsPageState();
+
+}
+class _ProductsPageState extends State<ProductsPage>{
+
+  @override
+  initState(){
+    widget.model.fetchProducts();
+    super.initState();
+  }
   Widget _buildSideDrawer(BuildContext context) {
     return Drawer(
         child: Column(

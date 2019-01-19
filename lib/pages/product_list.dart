@@ -52,7 +52,7 @@ class ProductListPage extends StatelessWidget {
                 children: <Widget>[
                   ListTile(
                       leading: CircleAvatar(
-                        backgroundImage: AssetImage(
+                        backgroundImage: NetworkImage(
                           model.allProducts[index].imageUrl,
                         ),
                       ),

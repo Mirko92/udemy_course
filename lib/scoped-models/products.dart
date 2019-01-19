@@ -27,14 +27,15 @@ mixin ProductsModel on ConnectedProductsModel {
     return _showFavorites;
   }
 
+
   void updateProduct(String title, String description, String image, double price){
     final Product updatedProduct = Product(
       title:title, 
       description: description, 
       imageUrl: image, 
       price: price, 
-      email: selectedProduct.email,
-      id: selectedProduct.id,);
+      userEmail: selectedProduct.userEmail,
+      userId: selectedProduct.userId,);
 
     products[selProductIndex] = updatedProduct;
 
@@ -57,8 +58,8 @@ mixin ProductsModel on ConnectedProductsModel {
                                             imageUrl: selectedProduct.imageUrl,
                                             price: selectedProduct.price,
                                             isFavorite:  !selectedProduct.isFavorite,
-                                            email:selectedProduct.email,
-                                            id: selectedProduct.id);
+                                            userEmail:selectedProduct.userEmail,
+                                            userId: selectedProduct.userId);
     products[selectedProductIndex] = updatedProduct; 
     
     notifyListeners();

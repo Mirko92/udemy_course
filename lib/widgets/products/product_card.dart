@@ -49,7 +49,7 @@ class ProductCard extends StatelessWidget {
           rebuildOnChange: true,
           builder: (BuildContext context, Widget widget, MainModel model) {
             return IconButton(
-              icon: Icon(model.products[index].isFavorite ? Icons.favorite : Icons.favorite_border),
+              icon: Icon(model.allProducts[index].isFavorite ? Icons.favorite : Icons.favorite_border),
               color: Colors.red,
               onPressed: () {
                 model.selectProduct(index);
@@ -70,6 +70,7 @@ class ProductCard extends StatelessWidget {
           Image.asset(product.imageUrl),
           _buildTitlePriceRow(),
           AddressTag('Qualcosa ci devo pur scrivere'),
+          Text(product.email),
           _buildActionButtons(context)
         ],
       ),

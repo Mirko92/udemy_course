@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:scoped_model/scoped_model.dart';
+import 'package:udemy_course/scoped-models/main.dart';
 
 class AuthPage extends StatefulWidget {
   @override
@@ -74,18 +76,18 @@ class _AuthPageState extends State<AuthPage> {
       ),
       value: _formData['terms'],
       onChanged: (bool value) {
-        // setState(() {
-          _formData['terms'] = value;
-        // });
+        _formData['terms'] = value;
       },
     );
   }
 
-  void _submitForm() {
+  void _submitForm(Function login) {
     if (!_formKey.currentState.validate()) {
       return;
     }
     _formKey.currentState.save();
+
+    login(_formData['email'], _formData['password']);
 
     print('Email    : ${_formData['email']}');
     print('Password : ${_formData['password']}');
@@ -118,10 +120,14 @@ class _AuthPageState extends State<AuthPage> {
                     SizedBox(
                       height: 10.0,
                     ),
-                    RaisedButton(
-                        textColor: Colors.white,
-                        child: Text('Login'),
-                        onPressed: _submitForm),
+                    ScopedModelDescendant<MainModel>(
+                      builder: (context, widget, MainModel userModel) {
+                        return RaisedButton(
+                            textColor: Colors.white,
+                            child: Text('Login'),
+                            onPressed: () => _submitForm(userModel.login));
+                      },
+                    ),
                   ],
                 ),
               ),

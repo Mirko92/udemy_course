@@ -1,54 +1,54 @@
-import 'package:scoped_model/scoped_model.dart';
 import 'package:udemy_course/model/product.dart';
+import 'package:udemy_course/scoped-models/connected_products.dart';
 
-mixin ProductsModel on Model {
-  List<Product> _products = [];
-  int _selectedProductIndex; 
+mixin ProductsModel on ConnectedProductsModel {
 
   bool _showFavorites = false;
 
-  List<Product> get products{
-    return List.from(_products);
+  List<Product> get allProducts{
+    return List.from(products);
   }
 
   List<Product> get displayedProducts{
     if ( _showFavorites ){
-      return _products.where((product) => product.isFavorite).toList();
+      return products.where((product) => product.isFavorite).toList();
     }
-      return List.from(_products);
+      return List.from(products);
   }
 
   int get selectedProductIndex{
-    return _selectedProductIndex;
+    return selProductIndex;
   }
   Product get selectedProduct{
-    return _selectedProductIndex!=null ? _products[_selectedProductIndex] : null;
+    return selectedProductIndex!=null ? products[selectedProductIndex] : null;
   }
 
   bool get displayedFavoritesOnly{
     return _showFavorites;
   }
 
-  void addProduct(Product product) {
-    _products.add(product);
-    _selectedProductIndex = null;
-    notifyListeners();
-  }
+  void updateProduct(String title, String description, String image, double price){
+    final Product updatedProduct = Product(
+      title:title, 
+      description: description, 
+      imageUrl: image, 
+      price: price, 
+      email: selectedProduct.email,
+      id: selectedProduct.id,);
 
-  void updateProduct(Product updateProduct) {
-    _products[_selectedProductIndex] = updateProduct;
-    _selectedProductIndex = null;
+    products[selProductIndex] = updatedProduct;
+
     notifyListeners();
   }
 
   void deleteProduct() {
-    _products.removeAt(_selectedProductIndex);
-    _selectedProductIndex = null;
+    products.removeAt(selectedProductIndex);
     notifyListeners();
   }
 
   void selectProduct(int index){
-    _selectedProductIndex = index;
+    selProductIndex = index;
+    notifyListeners();
   }
 
   void toggleProductFavoriteStatus(){
@@ -56,12 +56,12 @@ mixin ProductsModel on Model {
                                             description: selectedProduct.description,
                                             imageUrl: selectedProduct.imageUrl,
                                             price: selectedProduct.price,
-                                            isFavorite:  !selectedProduct.isFavorite);
-    _products[selectedProductIndex] = updatedProduct; 
+                                            isFavorite:  !selectedProduct.isFavorite,
+                                            email:selectedProduct.email,
+                                            id: selectedProduct.id);
+    products[selectedProductIndex] = updatedProduct; 
     
     notifyListeners();
-
-    _selectedProductIndex = null;
   }
 
   void toggleDisplayMode(){

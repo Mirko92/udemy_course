@@ -19,7 +19,7 @@ class ProductListPage extends StatelessWidget {
               return ProductEditPage();
             },
           ),
-        );
+        ).then((_) => model.selectProduct(null));
       },
     );
   }
@@ -31,7 +31,7 @@ class ProductListPage extends StatelessWidget {
         return ListView.builder(
           itemBuilder: (BuildContext context, int index) {
             return Dismissible(
-              key: Key(model.products[index].title),
+              key: Key(model.allProducts[index].title),
               direction: DismissDirection.endToStart,
               onDismissed: (DismissDirection value) {
                 if (value == DismissDirection.endToStart) {
@@ -53,19 +53,19 @@ class ProductListPage extends StatelessWidget {
                   ListTile(
                       leading: CircleAvatar(
                         backgroundImage: AssetImage(
-                          model.products[index].imageUrl,
+                          model.allProducts[index].imageUrl,
                         ),
                       ),
-                      title: Text(model.products[index].title),
-                      subtitle:
-                          Text('\$${model.products[index].price.toString()}'),
+                      title: Text(model.allProducts[index].title),
+                      subtitle: Text(
+                          '\$${model.allProducts[index].price.toString()}'),
                       trailing: _buildEditButton(context, index, model)),
                   Divider()
                 ],
               ),
             );
           },
-          itemCount: model.products.length,
+          itemCount: model.allProducts.length,
         );
       },
     );

@@ -4,7 +4,24 @@ import 'package:udemy_course/scoped-models/main.dart';
 
 import './product_edit.dart';
 
-class ProductListPage extends StatelessWidget {
+class ProductListPage extends StatefulWidget {
+  final MainModel model; 
+
+  ProductListPage(this.model);
+  
+  @override
+   _ProductListPageState createState() => _ProductListPageState();
+
+}
+
+class _ProductListPageState extends State<ProductListPage>{
+
+  @override
+  initState(){
+    widget.model.fetchProducts();
+    super.initState();
+  }
+
   Widget _buildEditButton(BuildContext context, int index, MainModel model) {
     return IconButton(
       icon: Icon(
@@ -12,7 +29,7 @@ class ProductListPage extends StatelessWidget {
         color: Colors.red,
       ),
       onPressed: () {
-        model.selectProduct(index);
+        model.selectProduct(model.allProducts[index].id);
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (BuildContext context) {
@@ -31,11 +48,11 @@ class ProductListPage extends StatelessWidget {
         return ListView.builder(
           itemBuilder: (BuildContext context, int index) {
             return Dismissible(
-              key: Key(model.allProducts[index].title),
+              key: Key(model.allProducts[index].id),
               direction: DismissDirection.endToStart,
               onDismissed: (DismissDirection value) {
                 if (value == DismissDirection.endToStart) {
-                  model.selectProduct(index);
+                  model.selectProduct(model.allProducts[index].id);
                   model.deleteProduct();
                 }
               },

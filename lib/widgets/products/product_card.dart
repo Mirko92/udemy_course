@@ -36,29 +36,31 @@ class ProductCard extends StatelessWidget {
   }
 
   Widget _buildActionButtons(BuildContext context) {
-    return ButtonBar(
-      alignment: MainAxisAlignment.center,
-      children: <Widget>[
-        IconButton(
-          icon: Icon(Icons.info),
-          color: Theme.of(context).accentColor,
-          onPressed: () => Navigator.pushNamed<bool>(
-              context, '/product/' + index.toString()),
-        ),
-        ScopedModelDescendant<MainModel>(
-          rebuildOnChange: true,
-          builder: (BuildContext context, Widget widget, MainModel model) {
-            return IconButton(
-              icon: Icon(model.allProducts[index].isFavorite ? Icons.favorite : Icons.favorite_border),
+    return ScopedModelDescendant<MainModel>(
+      rebuildOnChange: true,
+      builder: (BuildContext context, Widget widget, MainModel model) {
+        return ButtonBar(
+          alignment: MainAxisAlignment.center,
+          children: <Widget>[
+            IconButton(
+              icon: Icon(Icons.info),
+              color: Theme.of(context).accentColor,
+              onPressed: () => Navigator.pushNamed<bool>(
+                  context, '/product/' + model.allProducts[index].id),
+            ),
+            IconButton(
+              icon: Icon(model.allProducts[index].isFavorite
+                  ? Icons.favorite
+                  : Icons.favorite_border),
               color: Colors.red,
               onPressed: () {
-                model.selectProduct(index);
+                model.selectProduct(model.allProducts[index].id);
                 model.toggleProductFavoriteStatus();
               },
-            );
-          },
-        )
-      ],
+            )
+          ],
+        );
+      },
     );
   }
 
@@ -67,7 +69,12 @@ class ProductCard extends StatelessWidget {
     return Card(
       child: Column(
         children: <Widget>[
-          Image.network(product.imageUrl),
+          FadeInImage(
+            image: NetworkImage(product.imageUrl),
+            placeholder: AssetImage('assets/images/background.jpg'),
+            height: 300.0,
+            fit: BoxFit.cover,
+          ),
           _buildTitlePriceRow(),
           AddressTag('Qualcosa ci devo pur scrivere'),
           Text(product.userEmail),

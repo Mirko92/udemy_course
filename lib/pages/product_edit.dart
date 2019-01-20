@@ -76,23 +76,34 @@ class _ProductEditPageState extends State<ProductEditPage> {
     _formKey.currentState.save();
     _formData.imageUrl = 'assets/images/food.jpg';
 
-    if (selectedProductIndex == null) {
-      addProduct(_formData.title, _formData.description, _formData.imageUrl, _formData.price);
+    Future response;
+
+    if (selectedProductIndex == -1) {
+      response = addProduct(_formData.title, _formData.description, _formData.imageUrl, _formData.price);
     } else {
-      updateProduct(_formData.title, _formData.description, _formData.imageUrl, _formData.price);
+      response = updateProduct(_formData.title, _formData.description, _formData.imageUrl, _formData.price);
     }
 
-    Navigator.pushReplacementNamed(context, '/products').then((_)=> setSelectedProduct(null));
+    response.then((_){
+      Navigator.pushReplacementNamed(context, '/products').then((_)=> setSelectedProduct(null));
+    });
+
+    
   }
 
   Widget _buildSubmitButton() {
     return ScopedModelDescendant<MainModel>(
       builder: (BuildContext context, Widget widget, MainModel model) {
-        return RaisedButton(
+        Widget button = RaisedButton(
           child: Text('Save'),
           textColor: Colors.white,
-          onPressed: () => _submitForm(model.addProduct, model.updateProduct, model.selectProduct, model.selectedProductIndex),
+          onPressed: () => _submitForm(model.addProduct, model.updateProduct, model.selectProduct, model.selectedIndex),
         );
+
+        if ( model.isLoading ){
+          button = Center(child:CircularProgressIndicator());
+        }
+        return button;
       },
     );
   }
@@ -130,7 +141,7 @@ class _ProductEditPageState extends State<ProductEditPage> {
         builder: (BuildContext context, Widget widget, MainModel model) {
       final Widget pageContent =
           _buildPageContent(context, model.selectedProduct);
-      return model.selectedProductIndex == null
+      return model.selectedIndex == -1
           ? pageContent
           : Scaffold(
               appBar: AppBar(

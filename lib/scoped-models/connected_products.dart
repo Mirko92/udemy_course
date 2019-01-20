@@ -53,6 +53,7 @@ mixin ConnectedProductsModel on Model{
 
         _isLoading = false;
         notifyListeners();
+        _selProductID = null;
       }
     );
   }
@@ -173,7 +174,7 @@ mixin ProductsModel on ConnectedProductsModel {
                   isFavorite:  !selectedProduct.isFavorite,
                   userEmail:selectedProduct.userEmail,
                   userId: selectedProduct.userId);
-                  
+
     _products[selectedIndex] = updatedProduct; 
     
     notifyListeners();

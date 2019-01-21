@@ -76,7 +76,7 @@ class _ProductEditPageState extends State<ProductEditPage> {
     _formKey.currentState.save();
     _formData.imageUrl = 'assets/images/food.jpg';
 
-    Future response;
+    Future<bool> response;
 
     if (selectedProductIndex == -1) {
       response = addProduct(_formData.title, _formData.description, _formData.imageUrl, _formData.price);
@@ -84,8 +84,23 @@ class _ProductEditPageState extends State<ProductEditPage> {
       response = updateProduct(_formData.title, _formData.description, _formData.imageUrl, _formData.price);
     }
 
-    response.then((_){
-      Navigator.pushReplacementNamed(context, '/products').then((_)=> setSelectedProduct(null));
+    response.then((bool success){
+      if (success){
+        Navigator.pushReplacementNamed(context, '/products').then((_)=> setSelectedProduct(null));
+      }else{
+        showDialog(
+          context: context,
+          builder: (BuildContext context){
+          return AlertDialog(
+            title: Text('Something went wrong'), 
+            content: Text('Please try again'),
+            actions: <Widget>[
+              FlatButton(child: Text('Okay'), onPressed: (){
+                Navigator.of(context).pop();
+              },)
+            ],);
+        });
+      }
     });
 
     

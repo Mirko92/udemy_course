@@ -23,12 +23,15 @@ mixin ConnectedProductsModel on Model{
 
 
 
-  Future<Null> fetchProducts(){
+  Future<bool> fetchProducts(){
     _isLoading = true;
     notifyListeners();
 
     return http.get(productsUrl+'.json').then(
       (http.Response response){
+        if ( response.statusCode != 200 && response.statusCode != 201 ){
+          return false;
+        }
 
         final List<Product> fetchedProductList = [];
         final Map<String, dynamic> productListData = json.decode(response.body);
@@ -54,11 +57,12 @@ mixin ConnectedProductsModel on Model{
         _isLoading = false;
         notifyListeners();
         _selProductID = null;
+        return true;
       }
     );
   }
 
-  Future<Null> addProduct(String title, String description, String image, double price){
+  Future<bool> addProduct(String title, String description, String image, double price){
     
     _isLoading = true;
     notifyListeners();
@@ -74,7 +78,10 @@ mixin ConnectedProductsModel on Model{
 
     return http.post(productsUrl+'.json', body: json.encode(data))
     .then((http.Response response ){
-      print('Respones is coming');
+      if ( response.statusCode != 200 && response.statusCode != 201 ){
+        _isLoading = false;
+        return false;
+      }
 
       Map<String, dynamic> responseData = json.decode(response.body);
 
@@ -89,6 +96,9 @@ mixin ConnectedProductsModel on Model{
       _selProductID=null;
       _isLoading = false;
       notifyListeners();
+      return true;
+    }).catchError((onError){
+      print('Something went wrong');
     });
   }
 }
@@ -124,7 +134,7 @@ mixin ProductsModel on ConnectedProductsModel {
   }
 
 
-  Future<Null> updateProduct(String title, String description, String image, double price){
+  Future<bool> updateProduct(String title, String description, String image, double price){
     _isLoading = true;
     notifyListeners();
 
@@ -138,8 +148,12 @@ mixin ProductsModel on ConnectedProductsModel {
     };
 
     return http.put(productsUrl+'/${selectedProduct.id}.json', body: json.encode(updateData)).then((http.Response response){
+      if ( response.statusCode != 200 && response.statusCode != 201 ){
+        return false;
+      }
       _isLoading = false;
       notifyListeners();
+      return true;
     });
   }
 

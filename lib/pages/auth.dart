@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:udemy_course/scoped-models/main.dart';
 
+enum AuthMode { Signup, Login }
+
 class AuthPage extends StatefulWidget {
   @override
   State<AuthPage> createState() => _AuthPageState();
@@ -13,9 +15,14 @@ class _AuthPageState extends State<AuthPage> {
     'password': null,
     'terms': false
   };
+
   bool _acceptTermsValue = false;
 
+  final TextEditingController _passwordController = TextEditingController();
+
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  AuthMode _authMode = AuthMode.Login;
 
   DecorationImage _buildBackgroundImage(String path) {
     return DecorationImage(
@@ -53,13 +60,31 @@ class _AuthPageState extends State<AuthPage> {
 
   Widget _buildPasswordTextField() {
     return TextFormField(
-      decoration:
-          InputDecoration(labelText: 'Password', icon: Icon(Icons.vpn_key)),
+      controller: _passwordController,
+      decoration: InputDecoration(
+          labelText: 'Confirm Password', icon: Icon(Icons.vpn_key)),
       obscureText: true,
       style: _getTextStyle(context),
       validator: (String newValue) {
         if (newValue.isEmpty || newValue.length < 6) {
           return "Please enter a valid password, 6+ characters long";
+        }
+      },
+      onSaved: (String value) {
+        _formData['password'] = value.trim();
+      },
+    );
+  }
+
+  Widget _buildPasswordConfirmTextField() {
+    return TextFormField(
+      decoration:
+          InputDecoration(labelText: 'Password', icon: Icon(Icons.vpn_key)),
+      obscureText: true,
+      style: _getTextStyle(context),
+      validator: (String newValue) {
+        if (_passwordController.text != newValue) {
+          return "Password do not match";
         }
       },
       onSaved: (String value) {
@@ -81,17 +106,22 @@ class _AuthPageState extends State<AuthPage> {
     );
   }
 
-  void _submitForm(Function login) {
+  void _submitForm(Function login, Function signup) async{
     if (!_formKey.currentState.validate()) {
       return;
     }
     _formKey.currentState.save();
 
-    login(_formData['email'], _formData['password']);
+    if (_authMode == AuthMode.Login) {
+      login(_formData['email'], _formData['password']);
+    } else {
+      final Map<String, dynamic> successInformation = await signup(_formData['email'], _formData['password']);
 
-    print('Email    : ${_formData['email']}');
-    print('Password : ${_formData['password']}');
-    Navigator.pushReplacementNamed(context, '/products');
+      if (successInformation['success']){
+        Navigator.pushReplacementNamed(context, '/products');
+      }
+    }
+
   }
 
   @override
@@ -115,8 +145,31 @@ class _AuthPageState extends State<AuthPage> {
                 child: Column(
                   children: <Widget>[
                     _buildEmailTextField(),
+                    SizedBox(
+                      height: 10.0,
+                    ),
                     _buildPasswordTextField(),
+                    SizedBox(
+                      height: 10.0,
+                    ),
+                    _authMode == AuthMode.Signup
+                        ? _buildPasswordConfirmTextField()
+                        : Container(),
                     _buildAccetptSwitch(),
+                    SizedBox(
+                      height: 10.0,
+                    ),
+                    FlatButton(
+                      child: Text(
+                          'Switch to ${_authMode == AuthMode.Login ? 'Signup' : 'Login'}'),
+                      onPressed: () {
+                        setState(() {
+                          _authMode = _authMode == AuthMode.Login
+                              ? AuthMode.Signup
+                              : AuthMode.Login;
+                        });
+                      },
+                    ),
                     SizedBox(
                       height: 10.0,
                     ),
@@ -125,7 +178,8 @@ class _AuthPageState extends State<AuthPage> {
                         return RaisedButton(
                             textColor: Colors.white,
                             child: Text('Login'),
-                            onPressed: () => _submitForm(userModel.login));
+                            onPressed: () =>
+                                _submitForm(userModel.login, userModel.signup));
                       },
                     ),
                   ],

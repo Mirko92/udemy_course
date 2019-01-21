@@ -21,7 +21,10 @@ mixin ConnectedProductsModel on Model{
   /// Flag: Indica se si sta aspettando una chiamata asincrona o meno 
   bool _isLoading = false;
 
+}
 
+mixin ProductsModel on ConnectedProductsModel {
+  bool _showFavorites = false;
 
   Future<bool> fetchProducts(){
     _isLoading = true;
@@ -59,7 +62,12 @@ mixin ConnectedProductsModel on Model{
         _selProductID = null;
         return true;
       }
-    );
+    ).catchError((onError){
+      print('Something went wrong');
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    });
   }
 
   Future<bool> addProduct(String title, String description, String image, double price){
@@ -80,6 +88,7 @@ mixin ConnectedProductsModel on Model{
     .then((http.Response response ){
       if ( response.statusCode != 200 && response.statusCode != 201 ){
         _isLoading = false;
+      notifyListeners();
         return false;
       }
 
@@ -99,13 +108,11 @@ mixin ConnectedProductsModel on Model{
       return true;
     }).catchError((onError){
       print('Something went wrong');
+        _isLoading = false;
+        notifyListeners();
+        return false;
     });
   }
-}
-
-mixin ProductsModel on ConnectedProductsModel {
-
-  bool _showFavorites = false;
 
   List<Product> get allProducts{
     return List.from(_products);
@@ -154,10 +161,15 @@ mixin ProductsModel on ConnectedProductsModel {
       _isLoading = false;
       notifyListeners();
       return true;
+    }).catchError((onError){
+      print('Something went wrong');
+        _isLoading = false;
+        notifyListeners();
+        return false;
     });
   }
 
-  Future<Null> deleteProduct() {
+  Future<bool> deleteProduct() {
     _isLoading = true;
 
     final String deletedId = selectedProduct.id;
@@ -169,6 +181,12 @@ mixin ProductsModel on ConnectedProductsModel {
     return http.delete(productsUrl + '/${deletedId}' + '.json').then((http.Response response){
       _isLoading = false;
       notifyListeners();
+      return true;
+    }).catchError((onError){
+      print('Something went wrong');
+        _isLoading = false;
+        notifyListeners();
+        return false;
     });
 
   }

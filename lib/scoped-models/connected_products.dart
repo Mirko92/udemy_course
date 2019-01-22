@@ -274,8 +274,9 @@ mixin UsersModel on ConnectedProductsModel {
     var authRequest = http.post(authUrl, body: requestPayload.toJson());
 
     authRequest.then((http.Response response){
-      print('Signup Response: ' + response.toString());
-      final FireBaseResponse responseData = FireBaseResponse.fromJson(json.decode(response.body));
+      print('Signup Response: ' + json.decode(response.body));
+      final FireBaseAuthResponse responseData = FireBaseAuthResponse.fromJson(json.decode(response.body));
+      print(responseData);
       
     });
     return null;

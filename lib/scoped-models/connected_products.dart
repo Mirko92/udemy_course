@@ -228,53 +228,57 @@ mixin ProductsModel on ConnectedProductsModel {
 }
 
 mixin UsersModel on ConnectedProductsModel {
-  final String authUrl =
+  final String signInUrl =
       'https://www.googleapis.com/identitytoolkit/v3/relyingparty/signupNewUser?key=AIzaSyB_XDP0sftDbqQcVDov8LgRLODiNu2YbmU';
 
-  void login(String email, String password) {
-    _authenticatedUser =
-        new User(id: 'stica', email: email, password: password);
-  }
+  // void login(String email, String password) {
+  //   _authenticatedUser =
+  //       new User(id: 'stica', email: email, password: password);
+  // }
 
   Future<MyHttpResponse> signup(String email, String password) {
-    return http
-        .post(authUrl,
-            body: json.encode({
-              'email': email,
-              'password': password,
-              'returnSecureToken': true
-            }),
-            headers: {'Content-Type':'application/json'})
+    _isLoading = true;
+    notifyListeners();
+
+    return http.post(signInUrl,
+        body: json.encode( {'email': email, 'password': password, 'returnSecureToken': true} ),
+        headers: { 'Content-Type': 'application/json' })
         .then((http.Response response) {
-          print('Signup Response: ' + response.toString());
 
-          final FireBaseResponse responseData = FireBaseResponse.fromJson(json.decode(response.body));
+      print('Signup Response: ' + response.toString());
 
+      final FireBaseResponse responseData =
+          FireBaseResponse.fromJson(json.decode(response.body));
 
-          bool success = true;
-          var message = 'Authentication succeded!';
-          if( responseData.idToken == null ){
-            success = false;
-            message = 'Something went wrong';
-            if ( responseData.error.message == 'EMAIL_EXISTS'){
-              message = 'This email already exists';
-            }
-          }
+      bool success = true;
+      var message = 'Authentication succeded!';
+      if (responseData.idToken == null) {
+        success = false;
+        message = 'Something went wrong';
+        if (responseData.error.message == 'EMAIL_EXISTS') {
+          message = 'This email already exists';
+        }
+      }
+      _isLoading = false;
+      notifyListeners();
 
-          // final Map responseData = json.decode(response.body);
-          // bool success = true;
-          // var message = 'Authentication succeded!';
-          // if( !responseData.containsKey('idToken') ){
-          //   success = false;
-          //   message = 'Something went wrong';
-          //   if ( responseData['error']['message'] == ErrorMessages.EMAIL_EXISTS){
-          //     message = 'This email already exists';
-          //   }
-          // }
-
-      return MyHttpResponse(result:success, message:message);
+      return MyHttpResponse(result: success, message: message);
       // return {'success':success, 'message':message};
     });
+  }
+
+  Future<MyHttpResponse> login(String email, String password) {
+    final String authUrl = 'https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=AIzaSyB_XDP0sftDbqQcVDov8LgRLODiNu2YbmU';
+    final FireBaseAuthRequest requestPayload = FireBaseAuthRequest(email: email, password: password);
+
+    var authRequest = http.post(authUrl, body: requestPayload.toJson());
+
+    authRequest.then((http.Response response){
+      print('Signup Response: ' + response.toString());
+      final FireBaseResponse responseData = FireBaseResponse.fromJson(json.decode(response.body));
+      
+    });
+    return null;
   }
 }
 

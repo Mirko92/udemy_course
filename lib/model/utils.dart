@@ -5,6 +5,26 @@ class MyHttpResponse {
   MyHttpResponse({this.result, this.message});
 }
 
+///Request Body Payload
+///to SignIn with FireBase
+class FireBaseAuthRequest {
+  ///The email the user is signing in with.
+  String email;
+  ///The password for the account.
+  String password;
+  ///Whether or not to return an ID and refresh token. Should always be true.
+  bool secureToken;
+
+  FireBaseAuthRequest({this.email, this.password, this.secureToken = true});
+
+  Map<String, dynamic> toJson() =>
+    {
+      'password': password,
+      'email': email,
+      'secureToken':secureToken
+    };
+}
+
 class FireBaseResponse {
   ///The request type, always "identitytoolkit#VerifyCustomTokenResponse".
   String kind;

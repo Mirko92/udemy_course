@@ -62,8 +62,8 @@ class _AuthPageState extends State<AuthPage> {
   Widget _buildPasswordTextField() {
     return TextFormField(
       controller: _passwordController,
-      decoration: InputDecoration(
-          labelText: 'Password', icon: Icon(Icons.vpn_key)),
+      decoration:
+          InputDecoration(labelText: 'Password', icon: Icon(Icons.vpn_key)),
       obscureText: true,
       style: _getTextStyle(context),
       validator: (String newValue) {
@@ -80,7 +80,7 @@ class _AuthPageState extends State<AuthPage> {
   Widget _buildPasswordConfirmTextField() {
     return TextFormField(
       decoration:
-          InputDecoration(labelText: 'Password', icon: Icon(Icons.vpn_key)),
+          InputDecoration(labelText: 'Confirm Password', icon: Icon(Icons.vpn_key)),
       obscureText: true,
       style: _getTextStyle(context),
       validator: (String newValue) {
@@ -118,28 +118,28 @@ class _AuthPageState extends State<AuthPage> {
       Navigator.pushReplacementNamed(context, '/products');
     } else {
       // final Map<String, dynamic> successInformation =
-        final MyHttpResponse successInformation =
+      final MyHttpResponse successInformation =
           await signup(_formData['email'], _formData['password']);
 
       if (successInformation.result) {
         Navigator.pushReplacementNamed(context, '/products');
       } else {
         showDialog(
-          context: context,
-          builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('An Error occurred'),
-            content: Text('contenuto'),
-            actions: <Widget>[
-              FlatButton(
-                child: Text('Okay'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              )
-            ],
-          );
-        });
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('An Error occurred'),
+                content: Text('contenuto'),
+                actions: <Widget>[
+                  FlatButton(
+                    child: Text('Okay'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  )
+                ],
+              );
+            });
       }
     }
   }
@@ -150,7 +150,8 @@ class _AuthPageState extends State<AuthPage> {
     final double targetWidth = deviceWidth > 550.0 ? 500 : deviceWidth * 0.95;
 
     return Scaffold(
-      appBar: AppBar(title: Text('Login')),
+      appBar:
+          AppBar(title: Text(_authMode == AuthMode.Login ? 'Login' : 'Signup')),
       body: Container(
         decoration: BoxDecoration(
           image: _buildBackgroundImage('assets/images/background.jpg'),
@@ -195,11 +196,15 @@ class _AuthPageState extends State<AuthPage> {
                     ),
                     ScopedModelDescendant<MainModel>(
                       builder: (context, widget, MainModel userModel) {
-                        return RaisedButton(
-                            textColor: Colors.white,
-                            child: Text('Login'),
-                            onPressed: () =>
-                                _submitForm(userModel.login, userModel.signup));
+                        return userModel.isLoading
+                            ? Center(child: CircularProgressIndicator())
+                            : RaisedButton(
+                                textColor: Colors.white,
+                                child: Text(_authMode == AuthMode.Login
+                                    ? 'Login'
+                                    : 'Signup'),
+                                onPressed: () => _submitForm(
+                                    userModel.login, userModel.signup));
                       },
                     ),
                   ],

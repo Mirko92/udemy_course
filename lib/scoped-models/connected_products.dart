@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:scoped_model/scoped_model.dart';
 import 'package:udemy_course/model/product.dart';
 import 'package:udemy_course/model/user.dart';
+import 'package:udemy_course/model/utils.dart';
 
 mixin ConnectedProductsModel on Model {
   /// Url per i prodotti su FireBase
@@ -186,7 +187,7 @@ mixin ProductsModel on ConnectedProductsModel {
     notifyListeners();
 
     return http
-        .delete(productsUrl + '/${deletedId}' + '.json')
+        .delete(productsUrl + '/$deletedId' + '.json')
         .then((http.Response response) {
       _isLoading = false;
       notifyListeners();
@@ -235,7 +236,7 @@ mixin UsersModel on ConnectedProductsModel {
         new User(id: 'stica', email: email, password: password);
   }
 
-  Future<Map<String, dynamic>> signup(String email, String password) {
+  Future<MyHttpResponse> signup(String email, String password) {
     return http
         .post(authUrl,
             body: json.encode({
@@ -246,7 +247,33 @@ mixin UsersModel on ConnectedProductsModel {
             headers: {'Content-Type':'application/json'})
         .then((http.Response response) {
           print('Signup Response: ' + response.toString());
-      return {'success':true, 'message':'Authentication succeded!'};
+
+          final FireBaseResponse responseData = FireBaseResponse.fromJson(json.decode(response.body));
+
+
+          bool success = true;
+          var message = 'Authentication succeded!';
+          if( responseData.idToken == null ){
+            success = false;
+            message = 'Something went wrong';
+            if ( responseData.error.message == 'EMAIL_EXISTS'){
+              message = 'This email already exists';
+            }
+          }
+
+          // final Map responseData = json.decode(response.body);
+          // bool success = true;
+          // var message = 'Authentication succeded!';
+          // if( !responseData.containsKey('idToken') ){
+          //   success = false;
+          //   message = 'Something went wrong';
+          //   if ( responseData['error']['message'] == ErrorMessages.EMAIL_EXISTS){
+          //     message = 'This email already exists';
+          //   }
+          // }
+
+      return MyHttpResponse(result:success, message:message);
+      // return {'success':success, 'message':message};
     });
   }
 }

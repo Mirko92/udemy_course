@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
+import 'package:udemy_course/model/utils.dart';
 import 'package:udemy_course/scoped-models/main.dart';
 
 enum AuthMode { Signup, Login }
@@ -62,7 +63,7 @@ class _AuthPageState extends State<AuthPage> {
     return TextFormField(
       controller: _passwordController,
       decoration: InputDecoration(
-          labelText: 'Confirm Password', icon: Icon(Icons.vpn_key)),
+          labelText: 'Password', icon: Icon(Icons.vpn_key)),
       obscureText: true,
       style: _getTextStyle(context),
       validator: (String newValue) {
@@ -106,7 +107,7 @@ class _AuthPageState extends State<AuthPage> {
     );
   }
 
-  void _submitForm(Function login, Function signup) async{
+  void _submitForm(Function login, Function signup) async {
     if (!_formKey.currentState.validate()) {
       return;
     }
@@ -114,14 +115,33 @@ class _AuthPageState extends State<AuthPage> {
 
     if (_authMode == AuthMode.Login) {
       login(_formData['email'], _formData['password']);
+      Navigator.pushReplacementNamed(context, '/products');
     } else {
-      final Map<String, dynamic> successInformation = await signup(_formData['email'], _formData['password']);
+      // final Map<String, dynamic> successInformation =
+        final MyHttpResponse successInformation =
+          await signup(_formData['email'], _formData['password']);
 
-      if (successInformation['success']){
+      if (successInformation.result) {
         Navigator.pushReplacementNamed(context, '/products');
+      } else {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('An Error occurred'),
+            content: Text('contenuto'),
+            actions: <Widget>[
+              FlatButton(
+                child: Text('Okay'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              )
+            ],
+          );
+        });
       }
     }
-
   }
 
   @override

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
+import 'package:udemy_course/model/auth.dart';
 import 'package:udemy_course/model/utils.dart';
 import 'package:udemy_course/scoped-models/main.dart';
 
-enum AuthMode { Signup, Login }
 
 class AuthPage extends StatefulWidget {
   @override
@@ -107,21 +107,15 @@ class _AuthPageState extends State<AuthPage> {
     );
   }
 
-  void _submitForm(Function login, Function signup) async {
+  void _submitForm(Function authenticate) async {
     if (!_formKey.currentState.validate()) {
       return;
     }
     _formKey.currentState.save();
 
-    if (_authMode == AuthMode.Login) {
-      login(_formData['email'], _formData['password']);
-      Navigator.pushReplacementNamed(context, '/products');
-    } else {
-      // final Map<String, dynamic> successInformation =
-      final MyHttpResponse successInformation =
-          await signup(_formData['email'], _formData['password']);
+    MyHttpResponse successInformation = await authenticate(_formData['email'], _formData['password'], _authMode);
 
-      if (successInformation.result) {
+    if (successInformation.result) {
         Navigator.pushReplacementNamed(context, '/products');
       } else {
         showDialog(
@@ -129,19 +123,17 @@ class _AuthPageState extends State<AuthPage> {
             builder: (BuildContext context) {
               return AlertDialog(
                 title: Text('An Error occurred'),
-                content: Text('contenuto'),
+                content: Text(successInformation.message),
                 actions: <Widget>[
                   FlatButton(
                     child: Text('Okay'),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                  )
+                    onPressed: ()=>Navigator.of(context).pop(),
+                  ),
                 ],
               );
-            });
+            },
+          );
       }
-    }
   }
 
   @override
@@ -204,7 +196,7 @@ class _AuthPageState extends State<AuthPage> {
                                     ? 'Login'
                                     : 'Signup'),
                                 onPressed: () => _submitForm(
-                                    userModel.login, userModel.signup));
+                                    userModel.authenticate));
                       },
                     ),
                   ],

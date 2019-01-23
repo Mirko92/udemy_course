@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:scoped_model/scoped_model.dart';
+import 'package:udemy_course/model/auth.dart';
 import 'package:udemy_course/model/product.dart';
 import 'package:udemy_course/model/user.dart';
 import 'package:udemy_course/model/utils.dart';
@@ -228,24 +229,28 @@ mixin ProductsModel on ConnectedProductsModel {
 }
 
 mixin UsersModel on ConnectedProductsModel {
-  final String signInUrl =
+  final String signupUrl =
       'https://www.googleapis.com/identitytoolkit/v3/relyingparty/signupNewUser?key=AIzaSyB_XDP0sftDbqQcVDov8LgRLODiNu2YbmU';
+  final String authUrl = 
+      'https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=AIzaSyB_XDP0sftDbqQcVDov8LgRLODiNu2YbmU';
 
-  // void login(String email, String password) {
-  //   _authenticatedUser =
-  //       new User(id: 'stica', email: email, password: password);
-  // }
-
-  Future<MyHttpResponse> signup(String email, String password) {
+  Future<MyHttpResponse> authenticate(String email, String password, [AuthMode mode = AuthMode.Login]){
     _isLoading = true;
     notifyListeners();
 
-    return http.post(signInUrl,
-        body: json.encode( {'email': email, 'password': password, 'returnSecureToken': true} ),
-        headers: { 'Content-Type': 'application/json' })
-        .then((http.Response response) {
+    Future<http.Response> response;
 
-      print('Signup Response: ' + response.toString());
+    if(mode == AuthMode.Login){
+      response = http.post(authUrl,
+        body: json.encode( {'email': email, 'password': password, 'returnSecureToken': true} ),
+        headers: { 'Content-Type': 'application/json' });
+    }else{
+      final FireBaseAuthRequest requestPayload = FireBaseAuthRequest(email: email, password: password);
+      response = http.post(signupUrl, body: requestPayload.toJson());
+    }
+
+    return response.then((http.Response response) {
+      print('${mode == AuthMode.Login ? 'SignIn' : 'SignUp'} Response: ' + response.toString());
 
       final FireBaseResponse responseData =
           FireBaseResponse.fromJson(json.decode(response.body));
@@ -258,28 +263,20 @@ mixin UsersModel on ConnectedProductsModel {
         if (responseData.error.message == 'EMAIL_EXISTS') {
           message = 'This email already exists';
         }
+        if (responseData.error.message == 'EMAIL_NOT_FOUND') {
+          message = 'This email was not found';
+        }
+        if (responseData.error.message == 'INVALID_PASSWORD') {
+          message = 'This password is invalid';
+        }
       }
+
       _isLoading = false;
       notifyListeners();
 
       return MyHttpResponse(result: success, message: message);
-      // return {'success':success, 'message':message};
     });
-  }
 
-  Future<MyHttpResponse> login(String email, String password) {
-    final String authUrl = 'https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=AIzaSyB_XDP0sftDbqQcVDov8LgRLODiNu2YbmU';
-    final FireBaseAuthRequest requestPayload = FireBaseAuthRequest(email: email, password: password);
-
-    var authRequest = http.post(authUrl, body: requestPayload.toJson());
-
-    authRequest.then((http.Response response){
-      print('Signup Response: ' + json.decode(response.body));
-      final FireBaseAuthResponse responseData = FireBaseAuthResponse.fromJson(json.decode(response.body));
-      print(responseData);
-      
-    });
-    return null;
   }
 }
 
@@ -288,3 +285,52 @@ mixin UtilityModel on ConnectedProductsModel {
     return _isLoading;
   }
 }
+
+
+
+
+
+// Future<MyHttpResponse> signup(String email, String password) {
+  //   _isLoading = true;
+  //   notifyListeners();
+
+  //   return http.post(signupUrl,
+  //       body: json.encode( {'email': email, 'password': password, 'returnSecureToken': true} ),
+  //       headers: { 'Content-Type': 'application/json' })
+  //       .then((http.Response response) {
+
+  //     print('Signup Response: ' + response.toString());
+
+  //     final FireBaseResponse responseData =
+  //         FireBaseResponse.fromJson(json.decode(response.body));
+
+  //     bool success = true;
+  //     var message = 'Authentication succeded!';
+  //     if (responseData.idToken == null) {
+  //       success = false;
+  //       message = 'Something went wrong';
+  //       if (responseData.error.message == 'EMAIL_EXISTS') {
+  //         message = 'This email already exists';
+  //       }
+  //     }
+  //     _isLoading = false;
+  //     notifyListeners();
+
+  //     return MyHttpResponse(result: success, message: message);
+  //   });
+  // }
+
+  // Future<MyHttpResponse> login(String email, String password) {
+    
+  //   final FireBaseAuthRequest requestPayload = FireBaseAuthRequest(email: email, password: password);
+
+  //   var authRequest = http.post(signInUrl, body: requestPayload.toJson());
+
+  //   authRequest.then((http.Response response){
+  //     print('Signup Response: ' + json.decode(response.body));
+  //     final FireBaseAuthResponse responseData = FireBaseAuthResponse.fromJson(json.decode(response.body));
+  //     print(responseData);
+      
+  //   });
+  //   return null;
+  // }

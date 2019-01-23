@@ -46,6 +46,8 @@ class FireBaseAuthResponse {
   ///Whether the email is for an existing account.
   bool registered;
 
+  _FireBaseError error;
+
   FireBaseAuthResponse.fromJson(Map json)
       : kind = json['kind'],
         idToken = json['idToken'],
@@ -53,7 +55,10 @@ class FireBaseAuthResponse {
         refreshToken = json['refreshToken'],
         expiresIn = json['expiresIn'],
         localId = json['localId'],
-        registered = json['registered'] == 'true';
+        registered = json['registered'] == 'true' {
+    var e = json['error'];
+    error = e != null ? _FireBaseError.fromJson(json['error']) : null;
+  }
 }
 
 class FireBaseResponse {

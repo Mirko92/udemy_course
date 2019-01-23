@@ -28,12 +28,15 @@ mixin ConnectedProductsModel on Model {
 mixin ProductsModel on ConnectedProductsModel {
   bool _showFavorites = false;
 
+  ///Richiede tutti i prodotti censiti su FireBase
   Future<bool> fetchProducts() {
     _isLoading = true;
     notifyListeners();
 
-    return http.get(productsUrl + '.json').then((http.Response response) {
+    return http.get(productsUrl + '.json?auth=${_authenticatedUser.token}').then((http.Response response) {
       if (response.statusCode != 200 && response.statusCode != 201) {
+        _isLoading = false;
+        notifyListeners();
         return false;
       }
 
@@ -69,8 +72,8 @@ mixin ProductsModel on ConnectedProductsModel {
     });
   }
 
-  Future<bool> addProduct(
-      String title, String description, String image, double price) {
+  ///Add a product to FireBase
+  Future<bool> addProduct(String title, String description, String image, double price) {
     _isLoading = true;
     notifyListeners();
 
@@ -85,7 +88,7 @@ mixin ProductsModel on ConnectedProductsModel {
     };
 
     return http
-        .post(productsUrl + '.json', body: json.encode(data))
+        .post(productsUrl + '.json?auth=${_authenticatedUser.token}', body: json.encode(data))
         .then((http.Response response) {
       if (response.statusCode != 200 && response.statusCode != 201) {
         _isLoading = false;
@@ -116,37 +119,8 @@ mixin ProductsModel on ConnectedProductsModel {
     });
   }
 
-  List<Product> get allProducts {
-    return List.from(_products);
-  }
-
-  List<Product> get displayedProducts {
-    if (_showFavorites) {
-      return _products.where((product) => product.isFavorite).toList();
-    }
-    return List.from(_products);
-  }
-
-  String get selectedProductID {
-    return _selProductID;
-  }
-
-  Product get selectedProduct {
-    return selectedProductID != null
-        ? _products.firstWhere((Product x) => x.id == _selProductID)
-        : null;
-  }
-
-  int get selectedIndex {
-    return _products.indexWhere((Product p) => p.id == _selProductID);
-  }
-
-  bool get displayedFavoritesOnly {
-    return _showFavorites;
-  }
-
-  Future<bool> updateProduct(
-      String title, String description, String image, double price) {
+  ///Update a product in FireBase
+  Future<bool> updateProduct(String title, String description, String image, double price) {
     _isLoading = true;
     notifyListeners();
 
@@ -161,7 +135,7 @@ mixin ProductsModel on ConnectedProductsModel {
     };
 
     return http
-        .put(productsUrl + '/${selectedProduct.id}.json',
+        .put(productsUrl + '/${selectedProduct.id}.json?auth=${_authenticatedUser.token}',
             body: json.encode(updateData))
         .then((http.Response response) {
       if (response.statusCode != 200 && response.statusCode != 201) {
@@ -178,6 +152,7 @@ mixin ProductsModel on ConnectedProductsModel {
     });
   }
 
+  ///Delete a product in FireBase
   Future<bool> deleteProduct() {
     _isLoading = true;
 
@@ -188,7 +163,7 @@ mixin ProductsModel on ConnectedProductsModel {
     notifyListeners();
 
     return http
-        .delete(productsUrl + '/$deletedId' + '.json')
+        .delete(productsUrl + '/$deletedId' + '.json?auth=${_authenticatedUser.token}')
         .then((http.Response response) {
       _isLoading = false;
       notifyListeners();
@@ -200,6 +175,7 @@ mixin ProductsModel on ConnectedProductsModel {
       return false;
     });
   }
+  
 
   void selectProduct(String productId) {
     _selProductID = productId;
@@ -225,6 +201,45 @@ mixin ProductsModel on ConnectedProductsModel {
   void toggleDisplayMode() {
     _showFavorites = !_showFavorites;
     notifyListeners();
+  }
+
+  /* GETTER */
+  
+  ///Returns all fetched product 
+  List<Product> get allProducts {
+    return List.from(_products);
+  }
+
+  ///Returns only favorite products, or all products
+  List<Product> get displayedProducts {
+    if (_showFavorites) {
+      return _products.where((product) => product.isFavorite).toList();
+    }
+    return List.from(_products);
+  }
+
+  ///Returns selected product ID 
+  String get selectedProductID {
+    return _selProductID;
+  }
+
+  ///Returns selected Product 
+  Product get selectedProduct {
+    return selectedProductID != null
+        ? _products.firstWhere((Product x) => x.id == _selProductID)
+        : null;
+  }
+
+  ///Return selected product index   
+  ///
+  ///Index about main collection "allProducts"
+  int get selectedIndex {
+    return _products.indexWhere((Product p) => p.id == _selProductID);
+  }
+
+  ///Return true if _showFavorite is true
+  bool get displayedFavoritesOnly {
+    return _showFavorites;
   }
 }
 
@@ -252,8 +267,8 @@ mixin UsersModel on ConnectedProductsModel {
     return response.then((http.Response response) {
       print('${mode == AuthMode.Login ? 'SignIn' : 'SignUp'} Response: ' + response.toString());
 
-      final FireBaseResponse responseData =
-          FireBaseResponse.fromJson(json.decode(response.body));
+      final FireBaseAuthResponse responseData =
+          FireBaseAuthResponse.fromJson(json.decode(response.body));
 
       bool success = true;
       var message = 'Authentication succeded!';
@@ -269,6 +284,8 @@ mixin UsersModel on ConnectedProductsModel {
         if (responseData.error.message == 'INVALID_PASSWORD') {
           message = 'This password is invalid';
         }
+      }else{
+        _authenticatedUser = User(id:responseData.localId, email:email, token: responseData.idToken);
       }
 
       _isLoading = false;

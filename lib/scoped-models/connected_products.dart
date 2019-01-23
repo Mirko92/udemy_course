@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:scoped_model/scoped_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:udemy_course/model/auth.dart';
 import 'package:udemy_course/model/product.dart';
 import 'package:udemy_course/model/user.dart';
@@ -286,6 +287,9 @@ mixin UsersModel on ConnectedProductsModel {
         }
       }else{
         _authenticatedUser = User(id:responseData.localId, email:email, token: responseData.idToken);
+        SharedPreferences.getInstance().then((pref){
+          pref.setString('token', responseData.idToken);
+        });
       }
 
       _isLoading = false;
@@ -294,6 +298,17 @@ mixin UsersModel on ConnectedProductsModel {
       return MyHttpResponse(result: success, message: message);
     });
 
+  }
+
+  void autoAuthenticate(){
+      SharedPreferences.getInstance().then((pref){
+        var token = pref.get('token');
+
+        if (token != null){
+          
+        }
+
+      });
   }
 }
 

@@ -20,12 +20,13 @@ class _MyAppState extends State<MyApp> {
   final MainModel _mainModel = MainModel();
 
   @override
-    void initState() {
-      super.initState();
-    }
+  void initState() {
+    _mainModel.autoAuthenticate();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-
     return ScopedModel<MainModel>(
       model: _mainModel,
       child: MaterialApp(
@@ -37,7 +38,7 @@ class _MyAppState extends State<MyApp> {
           buttonColor: Colors.deepPurple,
         ),
         routes: {
-          '/': (BuildContext context) => AuthPage(),
+          '/': (BuildContext context)=> _mainModel.user == null ? AuthPage() : ProductsPage(_mainModel),
           '/products': (BuildContext context) => ProductsPage(_mainModel),
           '/admin': (BuildContext context) => ProductsAdminPage(_mainModel),
         },
@@ -48,8 +49,9 @@ class _MyAppState extends State<MyApp> {
           }
           if (pathElements[1] == 'product') {
             final String productId = pathElements[2];
-            
-            final Product product = _mainModel.allProducts.firstWhere((Product p) => p.id == productId);
+
+            final Product product = _mainModel.allProducts
+                .firstWhere((Product p) => p.id == productId);
             return MaterialPageRoute<bool>(
               builder: (BuildContext context) => ProductPage(product),
             );

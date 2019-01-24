@@ -112,6 +112,12 @@ class _FireBaseErrorDescriptor {
 
 enum ErrorMessages { EMAIL_EXISTS }
 
+class LocalStorageItem{
+  static const TOKEN    = 'TOKEN';
+  static const USER_ID  = 'USER_ID';
+  static const EMAIL    = 'EMAIL';
+}
+
 // {
 //   "error": {
 //     "errors": [

@@ -244,7 +244,11 @@ mixin ProductsModel on ConnectedProductsModel {
   }
 }
 
-mixin UsersModel on ConnectedProductsModel {
+mixin UserModel on ConnectedProductsModel {
+  User get user {
+    return _authenticatedUser;
+  }
+
   final String signupUrl =
       'https://www.googleapis.com/identitytoolkit/v3/relyingparty/signupNewUser?key=AIzaSyB_XDP0sftDbqQcVDov8LgRLODiNu2YbmU';
   final String authUrl = 
@@ -288,7 +292,9 @@ mixin UsersModel on ConnectedProductsModel {
       }else{
         _authenticatedUser = User(id:responseData.localId, email:email, token: responseData.idToken);
         SharedPreferences.getInstance().then((pref){
-          pref.setString('token', responseData.idToken);
+          pref.setString(LocalStorageItem.TOKEN, responseData.idToken);
+          pref.setString(LocalStorageItem.EMAIL, responseData.email);
+          pref.setString(LocalStorageItem.USER_ID, responseData.localId);
         });
       }
 
@@ -302,13 +308,25 @@ mixin UsersModel on ConnectedProductsModel {
 
   void autoAuthenticate(){
       SharedPreferences.getInstance().then((pref){
-        var token = pref.get('token');
+        var token = pref.get(LocalStorageItem.TOKEN);
 
         if (token != null){
-          
+          final String userEmail = pref.getString(LocalStorageItem.EMAIL);
+          final String userID = pref.getString(LocalStorageItem.USER_ID);
+
+          _authenticatedUser = User(email: userEmail, id:userID, token: token);
+
+
+        }else{
+          pref.clear();
         }
 
       });
+  }
+
+  void logout(){
+    SharedPreferences.getInstance().then((pref)=> pref.clear());
+    _authenticatedUser = null;
   }
 }
 

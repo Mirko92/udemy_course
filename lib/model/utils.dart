@@ -38,7 +38,7 @@ class FireBaseAuthResponse {
   String refreshToken;
 
   ///The number of seconds in which the ID token expires.
-  String expiresIn;
+  int expiresIn;
 
   ///The uid of the authenticated user.
   String localId;
@@ -53,7 +53,7 @@ class FireBaseAuthResponse {
         idToken = json['idToken'],
         email = json['email'],
         refreshToken = json['refreshToken'],
-        expiresIn = json['expiresIn'],
+        expiresIn = int.parse(json['expiresIn']),
         localId = json['localId'],
         registered = json['registered'] == 'true' {
     var e = json['error'];
@@ -113,9 +113,10 @@ class _FireBaseErrorDescriptor {
 enum ErrorMessages { EMAIL_EXISTS }
 
 class LocalStorageItem{
-  static const TOKEN    = 'TOKEN';
-  static const USER_ID  = 'USER_ID';
-  static const EMAIL    = 'EMAIL';
+  static const TOKEN        = 'TOKEN';
+  static const USER_ID      = 'USER_ID';
+  static const EMAIL        = 'EMAIL';
+  static const EXPIRY_TIME  = 'EXPIRY_TIME';
 }
 
 // {

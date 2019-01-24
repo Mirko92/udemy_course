@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
@@ -245,6 +246,9 @@ mixin ProductsModel on ConnectedProductsModel {
 }
 
 mixin UserModel on ConnectedProductsModel {
+
+  Timer _authTimer;
+
   User get user {
     return _authenticatedUser;
   }
@@ -291,10 +295,16 @@ mixin UserModel on ConnectedProductsModel {
         }
       }else{
         _authenticatedUser = User(id:responseData.localId, email:email, token: responseData.idToken);
+
+        setAuthTimeout(responseData.expiresIn);
+
+        final DateTime expiryTime = DateTime.now().add(Duration(seconds: responseData.expiresIn));
+
         SharedPreferences.getInstance().then((pref){
           pref.setString(LocalStorageItem.TOKEN, responseData.idToken);
           pref.setString(LocalStorageItem.EMAIL, responseData.email);
           pref.setString(LocalStorageItem.USER_ID, responseData.localId);
+          pref.setString(LocalStorageItem.EXPIRY_TIME, expiryTime.toIso8601String());
         });
       }
 
@@ -310,23 +320,34 @@ mixin UserModel on ConnectedProductsModel {
       SharedPreferences.getInstance().then((pref){
         var token = pref.get(LocalStorageItem.TOKEN);
 
-        if (token != null){
-          final String userEmail = pref.getString(LocalStorageItem.EMAIL);
-          final String userID = pref.getString(LocalStorageItem.USER_ID);
+        DateTime expiryTime = (DateTime.parse(pref.getString(LocalStorageItem.EXPIRY_TIME)));
 
-          _authenticatedUser = User(email: userEmail, id:userID, token: token);
+        if ( token != null && expiryTime.isAfter(DateTime.now()) ){
+            final String userEmail = pref.getString(LocalStorageItem.EMAIL);
+            final String userID = pref.getString(LocalStorageItem.USER_ID);
 
-
+            _authenticatedUser = User(email: userEmail, id:userID, token: token);
+            setAuthTimeout(expiryTime.difference(DateTime.now()).inSeconds);
         }else{
+          _authenticatedUser = null;
           pref.clear();
         }
 
+        notifyListeners();
       });
   }
 
   void logout(){
-    SharedPreferences.getInstance().then((pref)=> pref.clear());
+    print('[UserModel] Logout()');
+    _authTimer.cancel();
     _authenticatedUser = null;
+    SharedPreferences.getInstance().then((pref)=> pref.clear());
+  }
+
+  void setAuthTimeout(int time){
+    _authTimer = Timer(Duration(seconds: time), (){
+      logout();
+    });
   }
 }
 

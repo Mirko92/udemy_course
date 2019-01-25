@@ -320,9 +320,11 @@ mixin UserModel on ConnectedProductsModel {
       SharedPreferences.getInstance().then((pref){
         var token = pref.get(LocalStorageItem.TOKEN);
 
-        DateTime expiryTime = (DateTime.parse(pref.getString(LocalStorageItem.EXPIRY_TIME)));
+        var exp = pref.getString(LocalStorageItem.EXPIRY_TIME);
+        DateTime expiryTime = (exp != null ? DateTime.parse(exp) : null);
 
-        if ( token != null && expiryTime.isAfter(DateTime.now()) ){
+
+        if ( token != null && expiryTime != null && expiryTime.isAfter(DateTime.now()) ){
             final String userEmail = pref.getString(LocalStorageItem.EMAIL);
             final String userID = pref.getString(LocalStorageItem.USER_ID);
 

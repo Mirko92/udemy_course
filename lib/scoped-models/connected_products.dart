@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:rxdart/subjects.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:udemy_course/model/auth.dart';
@@ -10,7 +11,7 @@ import 'package:udemy_course/model/user.dart';
 import 'package:udemy_course/model/utils.dart';
 
 mixin ConnectedProductsModel on Model {
-  /// Url per i prodotti su FireBase
+  /// Url per i prodotti su FireBase = https://mirko-flutter-products.firebaseio.com/products
   final String productsUrl =
       "https://mirko-flutter-products.firebaseio.com/products";
 
@@ -31,7 +32,7 @@ mixin ProductsModel on ConnectedProductsModel {
   bool _showFavorites = false;
 
   ///Richiede tutti i prodotti censiti su FireBase
-  Future<bool> fetchProducts() {
+  Future<bool> fetchProducts({onlyForUser = false}) {
     _isLoading = true;
     notifyListeners();
 
@@ -47,16 +48,17 @@ mixin ProductsModel on ConnectedProductsModel {
 
       if (productListData != null) {
         productListData.forEach((String key, dynamic productData) {
-          final Product newProduct = Product(
-              id: key,
-              title: productData['title'],
-              description: productData['description'],
-              imageUrl: productData['imageUrl'],
-              price: productData['price'],
-              userEmail: productData['userEmail'],
-              userId: productData['userId']);
+          final Product newProduct = Product.fromJson(productData, key);
 
-          fetchedProductList.add(newProduct);
+          if( newProduct.wishlistUsers != null ){
+            newProduct.isFavorite = newProduct.wishlistUsers.containsKey(_authenticatedUser.id) ? true : false;
+          }else{
+            newProduct.isFavorite = false;
+          }
+
+          if (!onlyForUser || (onlyForUser && newProduct.userId == _authenticatedUser.id) ){
+            fetchedProductList.add(newProduct);
+          }
         });
 
         _products = fetchedProductList;
@@ -66,11 +68,11 @@ mixin ProductsModel on ConnectedProductsModel {
       notifyListeners();
       _selProductID = null;
       return true;
-    }).catchError((onError) {
-      print('Something went wrong');
+    }).catchError((error) {
+      print('FetchProduct() - Something went wrong');
       _isLoading = false;
       notifyListeners();
-      return false;
+      throw error;
     });
   }
 
@@ -185,15 +187,36 @@ mixin ProductsModel on ConnectedProductsModel {
   }
 
   void toggleProductFavoriteStatus() {
-    final Product updatedProduct = Product(
+    bool newValue = !selectedProduct.isFavorite;
+    Product updatedProduct = Product(
         id: selectedProduct.id,
         title: selectedProduct.title,
         description: selectedProduct.description,
         imageUrl: selectedProduct.imageUrl,
         price: selectedProduct.price,
-        isFavorite: !selectedProduct.isFavorite,
+        isFavorite: newValue,
         userEmail: selectedProduct.userEmail,
         userId: selectedProduct.userId);
+    notifyListeners();
+
+
+    Future<http.Response> response;
+
+    if(newValue){
+      ///I have to add user ID 
+      response = http.put('$productsUrl/${selectedProduct.id}/wishlistUsers/${_authenticatedUser.id}.json?auth=${_authenticatedUser.token}',
+       body: json.encode(true));
+    }else{
+      ///I have to remove user ID
+      response = http.delete('$productsUrl/${selectedProduct.id}/wishlistUsers/${_authenticatedUser.id}.json?auth=${_authenticatedUser.token}');
+    }
+
+    response.then((result){
+      if (result.statusCode != 200 && result.statusCode != 201){
+        ///In case of negative response, reset product status
+        updatedProduct.isFavorite = !updatedProduct.isFavorite;
+      }
+    });
 
     _products[selectedIndex] = updatedProduct;
 
@@ -246,6 +269,11 @@ mixin ProductsModel on ConnectedProductsModel {
 }
 
 mixin UserModel on ConnectedProductsModel {
+  PublishSubject<bool> _user$ = PublishSubject();
+
+  PublishSubject<bool> get user${
+    return _user$;
+  }
 
   Timer _authTimer;
 
@@ -298,6 +326,8 @@ mixin UserModel on ConnectedProductsModel {
 
         setAuthTimeout(responseData.expiresIn);
 
+        _user$.add(true);
+
         final DateTime expiryTime = DateTime.now().add(Duration(seconds: responseData.expiresIn));
 
         SharedPreferences.getInstance().then((pref){
@@ -330,6 +360,7 @@ mixin UserModel on ConnectedProductsModel {
 
             _authenticatedUser = User(email: userEmail, id:userID, token: token);
             setAuthTimeout(expiryTime.difference(DateTime.now()).inSeconds);
+            _user$.add(true);
         }else{
           _authenticatedUser = null;
           pref.clear();
@@ -343,13 +374,12 @@ mixin UserModel on ConnectedProductsModel {
     print('[UserModel] Logout()');
     _authTimer.cancel();
     _authenticatedUser = null;
+    _user$.add(false);
     SharedPreferences.getInstance().then((pref)=> pref.clear());
   }
 
   void setAuthTimeout(int time){
-    _authTimer = Timer(Duration(seconds: time), (){
-      logout();
-    });
+    _authTimer = Timer(Duration(seconds: time), logout);
   }
 }
 

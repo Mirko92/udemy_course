@@ -20,7 +20,7 @@ class FireBaseAuthRequest {
   FireBaseAuthRequest({this.email, this.password, this.secureToken = true});
 
   Map<String, dynamic> toJson() =>
-      {'password': password, 'email': email, 'secureToken': secureToken};
+      {'password': password, 'email': email, 'secureToken': secureToken.toString()};
 }
 
 ///Response body received from SignIn request

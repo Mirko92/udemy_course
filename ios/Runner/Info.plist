@@ -2,6 +2,12 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<!--_________Permessi aggiuntivi____________-->
+ 	<key>NSLocationWhenInUseUsageDescription</key>
+    <string>Using location to display on a map</string>
+	<!--________________________________________-->
+
+
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleExecutable</key>

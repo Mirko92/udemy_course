@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:udemy_course/model/product.dart';
 import 'package:udemy_course/scoped-models/main.dart';
+import 'package:udemy_course/widgets/form_inputs/location.dart';
 
 class ProductEditPage extends StatefulWidget {
   @override
@@ -143,7 +144,11 @@ class _ProductEditPageState extends State<ProductEditPage> {
               _buildDescriptionTextField(product),
               _buildPriceTextField(product),
               SizedBox(
-                height: 20.0,
+                height: 10.0,
+              ),
+              LocationInput(),
+              SizedBox(
+                height: 10.0,
               ),
               _buildSubmitButton(),
             ],
